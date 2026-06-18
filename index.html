@@ -110,7 +110,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
     <div class="header-title"><h1>W杯2026</h1><span class="year">予想ポイント順位表</span></div>
     <div style="display:flex;align-items:center;gap:10px;">
       <div class="header-meta">更新: <strong id="lastUpdated">—</strong></div>
-      <button onclick="fetchLatest()" id="fetchBtn" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;white-space:nowrap;">⟳ 結果を更新</button>
+
     </div>
   </div>
 </header>
@@ -175,55 +175,55 @@ const PARTICIPANTS=[
 
 const GROUPS={
 A:{teams:["メキシコ","南アフリカ","韓国","チェコ"],matches:[
-{dt:"6/12(金)|04:00",tv:"NHK",home:"メキシコ",away:"南アフリカ",hs:2,as:0},
+{dt:"6/12(金)|04:00",tv:"",home:"メキシコ",away:"南アフリカ",hs:2,as:0},
 {dt:"6/12(金)|11:00",tv:"",home:"韓国",away:"チェコ",hs:2,as:1},
-{dt:"6/19(木)|01:00",tv:"",home:"チェコ",away:"南アフリカ",hs:null,as:null},
+{dt:"6/19(木)|01:00",tv:"NTV",home:"チェコ",away:"南アフリカ",hs:null,as:null},
 {dt:"6/19(木)|09:00",tv:"",home:"メキシコ",away:"韓国",hs:null,as:null},
-{dt:"6/25(木)|10:00",tv:"NHK",home:"チェコ",away:"メキシコ",hs:null,as:null},
+{dt:"6/25(木)|10:00",tv:"",home:"チェコ",away:"メキシコ",hs:null,as:null},
 {dt:"6/25(木)|10:00",tv:"",home:"南アフリカ",away:"韓国",hs:null,as:null},
 ]},
 B:{teams:["カナダ","ボスニア","カタール","スイス"],matches:[
 {dt:"6/13(土)|04:00",tv:"",home:"カナダ",away:"ボスニア",hs:1,as:1},
 {dt:"6/14(日)|04:00",tv:"",home:"カタール",away:"スイス",hs:1,as:1},
 {dt:"6/19(木)|10:00",tv:"",home:"スイス",away:"ボスニア",hs:null,as:null},
-{dt:"6/20(金)|03:00",tv:"",home:"カナダ",away:"カタール",hs:null,as:null},
+{dt:"6/19(金)|07:00",tv:"",home:"カナダ",away:"カタール",hs:null,as:null},
 {dt:"6/25(木)|05:00",home:"カナダ",away:"スイス",hs:null,as:null},
 {dt:"6/25(木)|04:00",tv:"",home:"ボスニア",away:"カタール",hs:null,as:null},
 ]},
 C:{teams:["ブラジル","モロッコ","ハイチ","スコットランド"],matches:[
 {dt:"6/14(日)|07:00",tv:"",home:"ブラジル",away:"モロッコ",hs:1,as:1},
 {dt:"6/14(日)|10:00",tv:"",home:"ハイチ",away:"スコットランド",hs:0,as:1},
-{dt:"6/20(金)|07:00",tv:"",home:"スコットランド",away:"モロッコ",hs:null,as:null},
-{dt:"6/20(金)|10:00",tv:"",home:"ブラジル",away:"ハイチ",hs:null,as:null},
+{dt:"6/20(金)|07:00",tv:"CX",home:"スコットランド",away:"モロッコ",hs:null,as:null},
+{dt:"6/20(土)|09:30",tv:"",home:"ブラジル",away:"ハイチ",hs:null,as:null},
 {dt:"6/25(木)|08:00",home:"ブラジル",away:"スコットランド",hs:null,as:null},
 {dt:"6/25(木)|07:00",tv:"",home:"モロッコ",away:"ハイチ",hs:null,as:null},
 ]},
 D:{teams:["アメリカ","パラグアイ","オーストラリア","トルコ"],matches:[
 {dt:"6/13(土)|10:00",tv:"",home:"アメリカ",away:"パラグアイ",hs:4,as:1},
-{dt:"6/14(日)|13:00",tv:"",home:"オーストラリア",away:"トルコ",hs:2,as:0},
+{dt:"6/14(日)|13:00",tv:"NTV",home:"オーストラリア",away:"トルコ",hs:2,as:0},
 {dt:"6/19(木)|04:00",tv:"",home:"アメリカ",away:"オーストラリア",hs:null,as:null},
-{dt:"6/20(金)|07:00",tv:"",home:"トルコ",away:"パラグアイ",hs:null,as:null},
+{dt:"6/20(土)|12:00",tv:"",home:"トルコ",away:"パラグアイ",hs:null,as:null},
 {dt:"6/26(金)|02:00",tv:"",home:"アメリカ",away:"トルコ",hs:null,as:null},
 {dt:"6/26(金)|02:00",tv:"",home:"パラグアイ",away:"オーストラリア",hs:null,as:null},
 ]},
 E:{teams:["ドイツ","キュラソー","コートジボワール","エクアドル"],matches:[
 {dt:"6/15(月)|02:00",tv:"",home:"ドイツ",away:"キュラソー",hs:7,as:1},
 {dt:"6/15(月)|08:00",tv:"",home:"コートジボワール",away:"エクアドル",hs:1,as:0},
-{dt:"6/21(土)|04:00",tv:"",home:"ドイツ",away:"コートジボワール",hs:null,as:null},
-{dt:"6/21(土)|10:00",tv:"",home:"エクアドル",away:"キュラソー",hs:null,as:null},
+{dt:"6/21(土)|04:00",tv:"NTV",home:"ドイツ",away:"コートジボワール",hs:null,as:null},
+{dt:"6/21(日)|09:00",tv:"",home:"エクアドル",away:"キュラソー",hs:null,as:null},
 {dt:"6/26(金)|05:00",home:"ドイツ",away:"エクアドル",hs:null,as:null},
 {dt:"6/26(金)|05:00",tv:"",home:"キュラソー",away:"コートジボワール",hs:null,as:null},
 ]},
 F:{teams:["オランダ","日本","スウェーデン","チュニジア"],matches:[
 {dt:"6/15(月)|11:00",tv:"NTV",home:"スウェーデン",away:"チュニジア",hs:5,as:1},
-{dt:"6/15(月)|05:00",tv:"NHK",home:"オランダ",away:"日本",hs:2,as:2},
+{dt:"6/15(月)|05:00",tv:"",home:"オランダ",away:"日本",hs:2,as:2},
 {dt:"6/21(土)|01:00",tv:"",home:"オランダ",away:"スウェーデン",hs:null,as:null},
-{dt:"6/22(日)|10:00",tv:"NTV",home:"チュニジア",away:"日本",hs:null,as:null},
-{dt:"6/26(金)|08:00",tv:"NHK",home:"日本",away:"スウェーデン",hs:null,as:null},
+{dt:"6/21(日)|13:00",tv:"NTV",home:"チュニジア",away:"日本",hs:null,as:null},
+{dt:"6/26(金)|08:00",tv:"",home:"日本",away:"スウェーデン",hs:null,as:null},
 {dt:"6/26(金)|08:00",tv:"",home:"チュニジア",away:"オランダ",hs:null,as:null},
 ]},
 G:{teams:["ベルギー","エジプト","イラン","ニュージーランド"],matches:[
-{dt:"6/16(火)|04:00",tv:"NHK",home:"ベルギー",away:"エジプト",hs:1,as:1},
+{dt:"6/16(火)|04:00",tv:"",home:"ベルギー",away:"エジプト",hs:1,as:1},
 {dt:"6/16(火)|11:00",tv:"",home:"イラン",away:"ニュージーランド",hs:2,as:2},
 {dt:"6/22(日)|04:00",tv:"",home:"ベルギー",away:"イラン",hs:null,as:null},
 {dt:"6/22(日)|07:00",tv:"",home:"ニュージーランド",away:"エジプト",hs:null,as:null},
@@ -231,7 +231,7 @@ G:{teams:["ベルギー","エジプト","イラン","ニュージーランド"],
 {dt:"6/27(土)|05:00",tv:"",home:"エジプト",away:"イラン",hs:null,as:null},
 ]},
 H:{teams:["スペイン","カボベルデ","サウジアラビア","ウルグアイ"],matches:[
-{dt:"6/16(火)|01:00",tv:"NHK",home:"スペイン",away:"カボベルデ",hs:0,as:0},
+{dt:"6/16(火)|01:00",tv:"",home:"スペイン",away:"カボベルデ",hs:0,as:0},
 {dt:"6/16(火)|07:00",tv:"",home:"サウジアラビア",away:"ウルグアイ",hs:1,as:1},
 {dt:"6/22(日)|01:00",tv:"",home:"スペイン",away:"サウジアラビア",hs:null,as:null},
 {dt:"6/22(日)|04:00",tv:"",home:"ウルグアイ",away:"カボベルデ",hs:null,as:null},
@@ -257,7 +257,7 @@ J:{teams:["アルゼンチン","アルジェリア","オーストリア","ヨル
 K:{teams:["ポルトガル","コンゴ","ウズベキスタン","コロンビア"],matches:[
 {dt:"6/18(木)|02:00",tv:"",home:"ポルトガル",away:"コンゴ",hs:1,as:1},
 {dt:"6/18(木)|11:00",tv:"",home:"ウズベキスタン",away:"コロンビア",hs:1,as:2},
-{dt:"6/24(水)|02:00",tv:"NHK",home:"ポルトガル",away:"ウズベキスタン",hs:null,as:null},
+{dt:"6/24(水)|02:00",tv:"",home:"ポルトガル",away:"ウズベキスタン",hs:null,as:null},
 {dt:"6/24(水)|11:00",tv:"NTV",home:"コロンビア",away:"コンゴ",hs:null,as:null},
 {dt:"6/28(日)|08:30",tv:"CX",home:"コロンビア",away:"ポルトガル",hs:null,as:null},
 {dt:"6/28(日)|08:30",tv:"",home:"コンゴ",away:"ウズベキスタン",hs:null,as:null},
@@ -505,7 +505,7 @@ function renderAll(){renderRanking();renderResults();renderPicks();}
 
 // 初回は静的データで即表示
 renderAll();
-document.getElementById('lastUpdated').textContent='6/18時点（日時・放送局全修正済み）';
+document.getElementById('lastUpdated').textContent='6/18時点';
 </script>
 </body>
 </html>
