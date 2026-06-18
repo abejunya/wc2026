@@ -60,7 +60,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 .standing-pts{font-size:10px;color:var(--muted);margin-left:2px;}
 .match-row{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);gap:8px;}
 .match-row:last-child{border-bottom:none;}
-.match-datetime{font-size:10px;color:var(--muted);width:72px;flex-shrink:0;line-height:1.5;}
+.match-datetime{font-size:10px;color:var(--muted);width:90px;flex-shrink:0;line-height:1.5;display:flex;flex-direction:column;gap:2px;}
 .match-teams{flex:1;display:flex;align-items:center;gap:6px;min-width:0;}
 .team-a{text-align:right;flex:1;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:flex-end;gap:3px;min-width:0;}
 .score-box{display:flex;gap:3px;align-items:center;flex-shrink:0;}
@@ -71,7 +71,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 .status-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;flex-shrink:0;min-width:34px;text-align:center;}
 .badge-done{background:#f0fdf4;color:var(--green);border:1px solid #86efac;}
 .badge-up{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
-.badge-tbd{background:#eff6ff;color:var(--blue);border:1px solid #93c5fd;font-size:9px;}
+.badge-tbd{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
 .flag{font-size:13px;line-height:1;flex-shrink:0;}
 .picks-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .picks-table{border-collapse:collapse;background:#fff;border-radius:10px;border:1px solid var(--border);font-size:11px;}
@@ -187,7 +187,7 @@ B:{teams:["カナダ","ボスニア","カタール","スイス"],matches:[
 {dt:"6/14(日)|04:00",tv:"",home:"カタール",away:"スイス",hs:1,as:1},
 {dt:"6/19(木)|10:00",tv:"",home:"スイス",away:"ボスニア",hs:null,as:null},
 {dt:"6/20(金)|03:00",tv:"",home:"カナダ",away:"カタール",hs:null,as:null},
-{dt:"6/25(木)05:00",home:"カナダ",away:"スイス",hs:null,as:null},
+{dt:"6/25(木)|05:00",home:"カナダ",away:"スイス",hs:null,as:null},
 {dt:"6/25(木)|04:00",tv:"",home:"ボスニア",away:"カタール",hs:null,as:null},
 ]},
 C:{teams:["ブラジル","モロッコ","ハイチ","スコットランド"],matches:[
@@ -195,7 +195,7 @@ C:{teams:["ブラジル","モロッコ","ハイチ","スコットランド"],mat
 {dt:"6/14(日)|10:00",tv:"",home:"ハイチ",away:"スコットランド",hs:0,as:1},
 {dt:"6/20(金)|07:00",tv:"",home:"スコットランド",away:"モロッコ",hs:null,as:null},
 {dt:"6/20(金)|10:00",tv:"",home:"ブラジル",away:"ハイチ",hs:null,as:null},
-{dt:"6/25(木)08:00",home:"ブラジル",away:"スコットランド",hs:null,as:null},
+{dt:"6/25(木)|08:00",home:"ブラジル",away:"スコットランド",hs:null,as:null},
 {dt:"6/25(木)|07:00",tv:"",home:"モロッコ",away:"ハイチ",hs:null,as:null},
 ]},
 D:{teams:["アメリカ","パラグアイ","オーストラリア","トルコ"],matches:[
@@ -211,7 +211,7 @@ E:{teams:["ドイツ","キュラソー","コートジボワール","エクアド
 {dt:"6/15(月)|08:00",tv:"",home:"コートジボワール",away:"エクアドル",hs:1,as:0},
 {dt:"6/21(土)|04:00",tv:"",home:"ドイツ",away:"コートジボワール",hs:null,as:null},
 {dt:"6/21(土)|10:00",tv:"",home:"エクアドル",away:"キュラソー",hs:null,as:null},
-{dt:"6/26(金)05:00",home:"ドイツ",away:"エクアドル",hs:null,as:null},
+{dt:"6/26(金)|05:00",home:"ドイツ",away:"エクアドル",hs:null,as:null},
 {dt:"6/26(金)|05:00",tv:"",home:"キュラソー",away:"コートジボワール",hs:null,as:null},
 ]},
 F:{teams:["オランダ","日本","スウェーデン","チュニジア"],matches:[
@@ -251,7 +251,7 @@ J:{teams:["アルゼンチン","アルジェリア","オーストリア","ヨル
 {dt:"6/17(水)|13:00",tv:"",home:"オーストリア",away:"ヨルダン",hs:3,as:1},
 {dt:"6/23(月)|04:00",tv:"",home:"アルゼンチン",away:"オーストリア",hs:null,as:null},
 {dt:"6/23(月)|10:00",tv:"",home:"ヨルダン",away:"アルジェリア",hs:null,as:null},
-{dt:"6/28(日)02:00",home:"アルゼンチン",away:"ヨルダン",hs:null,as:null},
+{dt:"6/28(日)|02:00",home:"アルゼンチン",away:"ヨルダン",hs:null,as:null},
 {dt:"6/28(日)|11:00",tv:"",home:"アルジェリア",away:"オーストリア",hs:null,as:null},
 ]},
 K:{teams:["ポルトガル","コンゴ","ウズベキスタン","コロンビア"],matches:[
@@ -267,55 +267,55 @@ L:{teams:["イングランド","クロアチア","ガーナ","パナマ"],matche
 {dt:"6/18(木)|05:00",tv:"",home:"ガーナ",away:"パナマ",hs:1,as:0},
 {dt:"6/24(水)|05:00",tv:"",home:"イングランド",away:"ガーナ",hs:null,as:null},
 {dt:"6/24(水)|08:00",tv:"CX",home:"パナマ",away:"クロアチア",hs:null,as:null},
-{dt:"6/28(日)08:00",home:"イングランド",away:"パナマ",hs:null,as:null},
+{dt:"6/28(日)|08:00",home:"イングランド",away:"パナマ",hs:null,as:null},
 {dt:"6/28(日)|06:00",tv:"",home:"クロアチア",away:"ガーナ",hs:null,as:null},
 ]},
 };
 
 const KNOCKOUT=[
 {round:"ラウンド32",matches:[
-{dt:"6/29(日)04:00",home:"1位A",away:"2位B",hs:null,as:null},
-{dt:"6/29(日)07:30",home:"1位C",away:"2位F",hs:null,as:null},
-{dt:"6/30(月)02:00",home:"1位E",away:"3位*",hs:null,as:null},
-{dt:"6/30(月)05:30",home:"1位B",away:"2位A",hs:null,as:null},
-{dt:"6/30(月)11:00",home:"1位F",away:"2位E",hs:null,as:null},
-{dt:"7/1(火)02:00",home:"1位D",away:"3位*",hs:null,as:null},
-{dt:"7/1(火)05:30",home:"1位G",away:"2位H",hs:null,as:null},
-{dt:"7/1(火)11:00",home:"1位I",away:"2位J",hs:null,as:null},
-{dt:"7/2(水)02:00",home:"1位K",away:"3位*",hs:null,as:null},
-{dt:"7/2(水)05:30",home:"1位H",away:"2位G",hs:null,as:null},
-{dt:"7/2(水)11:00",home:"1位J",away:"2位I",hs:null,as:null},
-{dt:"7/3(木)02:00",home:"1位L",away:"3位*",hs:null,as:null},
-{dt:"7/3(木)05:30",home:"勝者R32①",away:"勝者R32②",hs:null,as:null},
-{dt:"7/3(木)11:00",home:"勝者R32③",away:"勝者R32④",hs:null,as:null},
-{dt:"7/4(金)02:00",home:"勝者R32⑤",away:"勝者R32⑥",hs:null,as:null},
-{dt:"7/4(金)05:30",home:"勝者R32⑦",away:"勝者R32⑧",hs:null,as:null},
+{dt:"6/29(日)|04:00",home:"1位A",away:"2位B",hs:null,as:null},
+{dt:"6/29(日)|07:30",home:"1位C",away:"2位F",hs:null,as:null},
+{dt:"6/30(月)|02:00",home:"1位E",away:"3位*",hs:null,as:null},
+{dt:"6/30(月)|05:30",home:"1位B",away:"2位A",hs:null,as:null},
+{dt:"6/30(月)|11:00",home:"1位F",away:"2位E",hs:null,as:null},
+{dt:"7/1(火)|02:00",home:"1位D",away:"3位*",hs:null,as:null},
+{dt:"7/1(火)|05:30",home:"1位G",away:"2位H",hs:null,as:null},
+{dt:"7/1(火)|11:00",home:"1位I",away:"2位J",hs:null,as:null},
+{dt:"7/2(水)|02:00",home:"1位K",away:"3位*",hs:null,as:null},
+{dt:"7/2(水)|05:30",home:"1位H",away:"2位G",hs:null,as:null},
+{dt:"7/2(水)|11:00",home:"1位J",away:"2位I",hs:null,as:null},
+{dt:"7/3(木)|02:00",home:"1位L",away:"3位*",hs:null,as:null},
+{dt:"7/3(木)|05:30",home:"勝者R32①",away:"勝者R32②",hs:null,as:null},
+{dt:"7/3(木)|11:00",home:"勝者R32③",away:"勝者R32④",hs:null,as:null},
+{dt:"7/4(金)|02:00",home:"勝者R32⑤",away:"勝者R32⑥",hs:null,as:null},
+{dt:"7/4(金)|05:30",home:"勝者R32⑦",away:"勝者R32⑧",hs:null,as:null},
 ]},
 {round:"ラウンド16",matches:[
-{dt:"7/5(土)04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
-{dt:"7/5(土)08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
-{dt:"7/6(日)04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
-{dt:"7/6(日)08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
-{dt:"7/7(月)04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
-{dt:"7/7(月)08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
-{dt:"7/8(火)04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
-{dt:"7/8(火)08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/5(土)|04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/5(土)|08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/6(日)|04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/6(日)|08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/7(月)|04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/7(月)|08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/8(火)|04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/8(火)|08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
 ]},
 {round:"準々決勝",matches:[
-{dt:"7/10(木)04:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
-{dt:"7/10(木)08:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
-{dt:"7/11(金)04:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
-{dt:"7/11(金)08:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
+{dt:"7/10(木)|04:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
+{dt:"7/10(木)|08:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
+{dt:"7/11(金)|04:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
+{dt:"7/11(金)|08:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
 ]},
 {round:"準決勝",matches:[
-{dt:"7/15(火)04:00",home:"QF勝者",away:"QF勝者",hs:null,as:null},
-{dt:"7/16(水)04:00",home:"QF勝者",away:"QF勝者",hs:null,as:null},
+{dt:"7/15(火)|04:00",home:"QF勝者",away:"QF勝者",hs:null,as:null},
+{dt:"7/16(水)|04:00",home:"QF勝者",away:"QF勝者",hs:null,as:null},
 ]},
 {round:"3位決定戦",matches:[
-{dt:"7/19(日)04:00",home:"SF敗者",away:"SF敗者",hs:null,as:null},
+{dt:"7/19(日)|04:00",home:"SF敗者",away:"SF敗者",hs:null,as:null},
 ]},
 {round:"決勝",matches:[
-{dt:"7/20(月)04:00",home:"SF勝者",away:"SF勝者",hs:null,as:null},
+{dt:"7/20(月)|04:00",home:"SF勝者",away:"SF勝者",hs:null,as:null},
 ]},
 ];
 
@@ -403,7 +403,7 @@ function renderResults(){
     }).join('');
     html+=`<div class="group-block"><div class="group-header"><span class="group-label">G-${k}</span><div class="group-standing">${sRows}</div></div>
     ${g.matches.map(m=>{const done=m.hs!==null;if(!m.tv)m.tv="";return`<div class="match-row">
-      <div class="match-datetime">${(()=>{const[d,t]=m.dt.includes("|")?m.dt.split("|"):[m.dt,""];const icons={"NHK":'<span style="background:#009b9f;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px">NHK</span>',"NTV":'<span style="background:#d7003a;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px">日テレ</span>',"CX":'<span style="background:#ff6600;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px">フジ</span>'};return d+(t?`<br>${t}`:"")+((m.tv&&icons[m.tv])?`<br>${icons[m.tv]}`:"");})()}</div>
+      <div class="match-datetime">${(()=>{const[d,t]=m.dt.includes("|")?m.dt.split("|"):[m.dt,""];const icons={"NHK":'<span style="background:#003087;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.5px">NHK</span>',"NTV":'<span style="background:#cc0000;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px">日テレ</span>',"CX":'<span style="background:#3a75c4;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px">フジ</span>'};return `<div style="line-height:1.4">${d}${t?`<br>${t}`:""}</div>`+((m.tv&&icons[m.tv])?`<span style="margin-top:2px">${icons[m.tv]}</span>`:"");})()}</div>
       <div class="match-teams">
         <div class="team-a"><span class="tn">${m.home}</span><span class="flag">${F(m.home)}</span></div>
         <div class="score-box"><span class="score-num">${done?m.hs:'–'}</span><span class="score-sep">:</span><span class="score-num">${done?m.as:'–'}</span></div>
@@ -415,7 +415,7 @@ function renderResults(){
   for(const ph of KNOCKOUT){
     html+=`<div class="phase-title">${ph.round}</div><div class="group-block">`;
     html+=ph.matches.map(m=>{const done=m.hs!==null;const hf=F(m.home);const af=F(m.away);return`<div class="match-row">
-      <div class="match-datetime">${(()=>{const[d,t]=m.dt.includes("|")?m.dt.split("|"):[m.dt,""];const icons={"NHK":'<span style="background:#009b9f;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px">NHK</span>',"NTV":'<span style="background:#d7003a;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px">日テレ</span>',"CX":'<span style="background:#ff6600;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px">フジ</span>'};return d+(t?`<br>${t}`:"")+((m.tv&&icons[m.tv])?`<br>${icons[m.tv]}`:"");})()}</div>
+      <div class="match-datetime">${(()=>{const[d,t]=m.dt.includes("|")?m.dt.split("|"):[m.dt,""];const icons={"NHK":'<span style="background:#003087;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.5px">NHK</span>',"NTV":'<span style="background:#cc0000;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px">日テレ</span>',"CX":'<span style="background:#3a75c4;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px">フジ</span>'};return `<div style="line-height:1.4">${d}${t?`<br>${t}`:""}</div>`+((m.tv&&icons[m.tv])?`<span style="margin-top:2px">${icons[m.tv]}</span>`:"");})()}</div>
       <div class="match-teams">
         <div class="team-a"><span class="tn">${m.home}</span>${hf?`<span class="flag">${hf}</span>`:''}</div>
         <div class="score-box"><span class="score-num">${done?m.hs:'–'}</span><span class="score-sep">:</span><span class="score-num">${done?m.as:'–'}</span></div>
