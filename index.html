@@ -527,6 +527,7 @@ function switchTab(name){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
   if(name==='allpicks'){renderAllPicks();renderTeamPts();}
+  if(name==='today')renderToday();
 }
 function switchSubtab(name){
   ['picks','teampts'].forEach(n=>{
@@ -586,7 +587,7 @@ function renderTeamPts(){
   document.getElementById('teamPtsTable').innerHTML=thead+tbody;
 }
 
-function renderAll(){renderRanking();renderResults();renderPicks();renderToday();}
+function renderAll(){renderRanking();renderResults();renderPicks();}
 
 function renderToday(){
   const now = new Date();
