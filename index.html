@@ -737,4 +737,8 @@ function renderToday(){
     });
   };
 }
->
+
+// 初期表示
+renderAll();
+document.getElementById('lastUpdated').textContent=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+'更新';
+</script>
