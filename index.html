@@ -82,13 +82,16 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 .picks-table .name-cell{text-align:left;font-weight:700;background:#fff;min-width:90px;position:sticky;left:0;z-index:1;}
 .picks-table .pts-cell-sm{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent);background:#f9fafb;}
 .mark-pick{color:var(--blue);font-weight:900;}
-.champ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:14px;}
-.champ-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;}
-.champ-card.hit{border-color:#86efac;background:var(--green-bg);}
-.champ-team{font-weight:700;font-size:14px;margin-bottom:4px;display:flex;align-items:center;gap:4px;}
-.champ-team.hit{color:var(--green);}
-.champ-names{font-size:12px;color:var(--muted);}
-.champ-count{font-size:11px;color:var(--muted);margin-top:3px;}
+.champ-grid{display:flex;flex-direction:column;gap:12px;margin-top:14px;}
+.champ-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:16px;}
+.champ-card.hit{border-color:#fbbf24;background:#fffbeb;box-shadow:0 0 0 2px #fbbf24;}
+.champ-flag{font-size:28px;line-height:1;flex-shrink:0;}
+.champ-info{flex:1;min-width:0;}
+.champ-team{font-weight:700;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.champ-team.hit{color:var(--gold);}
+.champ-names-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.champ-name-tag{font-size:12px;background:#f3f4f6;border-radius:20px;padding:2px 10px;color:var(--text);}
+.champ-count{font-size:11px;color:var(--muted);margin-left:auto;flex-shrink:0;font-family:"Bebas Neue",sans-serif;font-size:20px;color:var(--accent);}
 .tab-panel{display:none;}.tab-panel.active{display:block;}
 .note{margin-top:14px;font-size:11px;color:var(--muted);line-height:1.7;background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;}
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:100;justify-content:center;align-items:center;flex-direction:column;gap:14px;}
@@ -125,7 +128,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
     </tr></thead><tbody id="rankingBody"></tbody></table>
     <div class="note">📋 <strong>ルール</strong><br>
       グループリーグ: 勝ち<strong>3pt</strong>・引き分け<strong>1pt</strong>・負け<strong>0pt</strong><br>
-      決勝トーナメント: 決勝出場ボーナス<strong>+3pt</strong>・準優勝ボーナス<strong>+4pt</strong>・優勝ボーナス<strong>+5pt</strong>・3位ボーナス<strong>+3pt</strong><br>
+      決勝トーナメント: 勝ち<strong>3pt</strong>・負け<strong>0pt</strong><br>
+      決勝トーナメントボーナス: 決勝出場<strong>+3pt</strong>・準優勝<strong>+4pt</strong>・優勝<strong>+5pt</strong>・3位<strong>+3pt</strong><br>
       ◎優勝予想的中で<strong>+5pt</strong>ボーナス。同点は同順位で表記。
     </div>
   </div>
@@ -196,7 +200,7 @@ C:{teams:["ブラジル","モロッコ","ハイチ","スコットランド"],mat
 ]},
 D:{teams:["アメリカ","パラグアイ","オーストラリア","トルコ"],matches:[
 {dt:"6/13(土)10:00",home:"アメリカ",away:"パラグアイ",hs:4,as:1},
-{dt:"6/15(月)04:00",home:"オーストラリア",away:"トルコ",hs:2,as:0},
+{dt:"6/14(日)13:00",home:"オーストラリア",away:"トルコ",hs:2,as:0},
 {dt:"6/20(金)04:00",home:"アメリカ",away:"オーストラリア",hs:null,as:null},
 {dt:"6/21(土)07:00",home:"トルコ",away:"パラグアイ",hs:null,as:null},
 {dt:"6/26(金)02:00",home:"アメリカ",away:"トルコ",hs:null,as:null},
@@ -252,7 +256,7 @@ J:{teams:["アルゼンチン","アルジェリア","オーストリア","ヨル
 ]},
 K:{teams:["ポルトガル","コンゴ","ウズベキスタン","コロンビア"],matches:[
 {dt:"6/18(木)02:00",home:"ポルトガル",away:"コンゴ",hs:1,as:1},
-{dt:"6/19(木)07:00",home:"ウズベキスタン",away:"コロンビア",hs:1,as:2},
+{dt:"6/18(木)11:00",home:"ウズベキスタン",away:"コロンビア",hs:1,as:2},
 {dt:"6/24(水)04:00",home:"ポルトガル",away:"ウズベキスタン",hs:null,as:null},
 {dt:"6/24(水)10:00",home:"コロンビア",away:"コンゴ",hs:null,as:null},
 {dt:"6/28(日)05:00",home:"コロンビア",away:"ポルトガル",hs:null,as:null},
@@ -260,7 +264,7 @@ K:{teams:["ポルトガル","コンゴ","ウズベキスタン","コロンビア
 ]},
 L:{teams:["イングランド","クロアチア","ガーナ","パナマ"],matches:[
 {dt:"6/18(木)05:00",home:"イングランド",away:"クロアチア",hs:4,as:2},
-{dt:"6/19(木)04:00",home:"ガーナ",away:"パナマ",hs:1,as:0},
+{dt:"6/18(木)05:00",home:"ガーナ",away:"パナマ",hs:1,as:0},
 {dt:"6/24(水)01:00",home:"イングランド",away:"ガーナ",hs:null,as:null},
 {dt:"6/24(水)07:00",home:"パナマ",away:"クロアチア",hs:null,as:null},
 {dt:"6/28(日)08:00",home:"イングランド",away:"パナマ",hs:null,as:null},
@@ -436,7 +440,7 @@ function renderAllPicks(){
   const tb='<tbody>'+sc.map(p=>{const s=new Set(p.picks);return`<tr>
     <td class="name-cell" style="position:sticky;left:0;background:#fff;z-index:1">${p.name}</td>
     ${all.map(({team,group},i)=>{const bl=i>0&&all[i-1].group!==all[i].group?'border-left:2px solid #d1d5db;':'';
-      if(team===p.champ)return`<td style="${bl}">◎</td>`;
+      if(team===p.champ)return`<td style="${bl}"><span style="font-size:14px">🏆</span></td>`;
       if(s.has(team))return`<td style="${bl}"><span class="mark-pick">●</span></td>`;
       return`<td style="${bl}"></td>`;}).join('')}
     <td class="pts-cell-sm">${p.total}</td></tr>`;}).join('')+'</tbody>';
@@ -447,8 +451,11 @@ function renderPicks(){
   const map={};for(const p of PARTICIPANTS){map[p.champ]=map[p.champ]||[];map[p.champ].push(p.name);}
   document.getElementById('picksGrid').innerHTML=Object.entries(map).sort((a,b)=>b[1].length-a[1].length)
     .map(([t,ns])=>{const hit=champion===t;return`<div class="champ-card ${hit?'hit':''}">
-      <div class="champ-team ${hit?'hit':''}">${hit?'🏆 ':''}<span>${F(t)}</span>${t}</div>
-      <div class="champ-names">${ns.join('、')}</div><div class="champ-count">${ns.length}名が予想</div>
+      <div class="champ-flag">${F(t)}</div>
+      <div class="champ-info">
+        <div class="champ-team ${hit?'hit':''}">${hit?'🏆 ':''}${t}<span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:4px">${ns.length}名</span></div>
+        <div class="champ-names-row">${ns.map(n=>`<span class="champ-name-tag">${n}</span>`).join('')}</div>
+      </div>
     </div>`;}).join('');
 }
 
