@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W杯2026 予想ポイント順位表</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+:root{--bg:#f8f9fa;--surface:#fff;--border:#e5e7eb;--text:#111827;--muted:#6b7280;--green:#16a34a;--green-bg:#f0fdf4;--gold:#d97706;--gold-bg:#fffbeb;--blue:#2563eb;--blue-bg:#eff6ff;--red:#dc2626;--accent:#1d4ed8;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;}
+.header{background:#fff;border-bottom:2px solid #111827;padding:20px 24px 16px;}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.header-title{display:flex;align-items:baseline;gap:10px;}
+.header-title h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,6vw,44px);letter-spacing:3px;color:#111827;line-height:1;}
+.header-title .year{font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,3vw,22px);color:var(--muted);letter-spacing:2px;}
+.header-meta{font-size:12px;color:var(--muted);}
+.header-meta strong{color:var(--text);}
+.tabs{background:#fff;border-bottom:1px solid var(--border);}
+.tabs-inner{max-width:1100px;margin:0 auto;display:flex;overflow-x:auto;}
+.tab{padding:12px 18px;font-size:13px;font-weight:700;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:'Noto Sans JP',sans-serif;white-space:nowrap;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.container{max-width:1100px;margin:0 auto;padding:24px 16px;}
+.status-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.chip{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;border:1px solid var(--border);background:#fff;}
+.chip-green{background:var(--green-bg);border-color:#86efac;color:var(--green);}
+.chip-gold{background:var(--gold-bg);border-color:#fcd34d;color:var(--gold);}
+.chip-blue{background:var(--blue-bg);border-color:#93c5fd;color:var(--blue);}
+.results-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--muted);margin-bottom:14px;}
+.ranking-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.ranking-table thead tr{background:#f3f4f6;}
+.ranking-table thead th{padding:10px 14px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-align:left;border-bottom:1px solid var(--border);}
+.ranking-table thead th.right{text-align:right;}
+.ranking-table tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+.ranking-table tbody tr:last-child{border-bottom:none;}
+.ranking-table tbody tr:hover{background:#f9fafb;}
+.ranking-table tbody tr.top3{background:var(--gold-bg);}
+.ranking-table tbody td{padding:13px 14px;vertical-align:middle;}
+.rank-cell{display:flex;align-items:center;gap:8px;}
+.rank-num{font-family:'Bebas Neue',sans-serif;font-size:18px;width:44px;text-align:center;color:var(--muted);flex-shrink:0;}
+.rank-medal{font-size:18px;width:44px;text-align:center;flex-shrink:0;}
+.player-name{font-weight:700;font-size:14px;}
+.champ-pick{font-size:11px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:3px;}
+.ctag{font-weight:700;}.ctag.hit{color:var(--green);}
+.pts-cell{text-align:right;}
+.pts-big{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);line-height:1;}
+.pts-label{font-size:10px;color:var(--muted);letter-spacing:1px;}
+.breakdown{display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap;margin-top:3px;}
+.bd{font-size:10px;padding:1px 6px;border-radius:3px;background:var(--bg);border:1px solid var(--border);color:var(--muted);}
+.bd.pos{background:#dcfce7;border-color:#86efac;color:var(--green);}
+.phase-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);margin:20px 0 10px;padding-left:8px;border-left:4px solid var(--accent);}
+.group-block{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;}
+.group-header{padding:10px 14px;background:#f3f4f6;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;}
+.group-label{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:var(--muted);flex-shrink:0;padding-top:2px;}
+.group-standing{font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:2px;}
+.standing-row{display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.standing-rank{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--muted);width:14px;flex-shrink:0;}
+.standing-pts{font-size:10px;color:var(--muted);margin-left:2px;}
+.match-row{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);gap:8px;}
+.match-row:last-child{border-bottom:none;}
+.match-datetime{font-size:10px;color:var(--muted);width:90px;flex-shrink:0;line-height:1.4;}
+.match-teams{flex:1;display:flex;align-items:center;gap:6px;min-width:0;}
+.team-a{text-align:right;flex:1;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:flex-end;gap:3px;min-width:0;}
+.score-box{display:flex;gap:3px;align-items:center;flex-shrink:0;}
+.score-num{font-family:'Bebas Neue',sans-serif;font-size:17px;width:18px;text-align:center;line-height:1;}
+.score-sep{color:var(--muted);font-size:11px;}
+.team-b{flex:1;font-size:12px;font-weight:700;display:flex;align-items:center;gap:3px;min-width:0;}
+.tn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.status-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;flex-shrink:0;min-width:34px;text-align:center;}
+.badge-done{background:#f0fdf4;color:var(--green);border:1px solid #86efac;}
+.badge-up{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+.badge-tbd{background:#eff6ff;color:var(--blue);border:1px solid #93c5fd;font-size:9px;}
+.flag{font-size:13px;line-height:1;flex-shrink:0;}
+.picks-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.picks-table{border-collapse:collapse;background:#fff;border-radius:10px;border:1px solid var(--border);font-size:11px;}
+.picks-table th,.picks-table td{border:1px solid var(--border);padding:5px 6px;text-align:center;}
+.picks-table thead tr:first-child th{background:#e5e7eb;font-size:10px;font-weight:700;color:var(--muted);}
+.picks-table thead tr:nth-child(2) th{background:#f3f4f6;font-size:10px;writing-mode:vertical-rl;height:70px;vertical-align:bottom;padding:4px 3px;}
+.picks-table tbody tr:hover{background:#f9fafb;}
+.picks-table .name-cell{text-align:left;font-weight:700;background:#fff;min-width:90px;position:sticky;left:0;z-index:1;}
+.picks-table .pts-cell-sm{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent);background:#f9fafb;}
+.mark-pick{color:var(--blue);font-weight:900;}
+.champ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:14px;}
+.champ-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;}
+.champ-card.hit{border-color:#86efac;background:var(--green-bg);}
+.champ-team{font-weight:700;font-size:14px;margin-bottom:4px;display:flex;align-items:center;gap:4px;}
+.champ-team.hit{color:var(--green);}
+.champ-names{font-size:12px;color:var(--muted);}
+.champ-count{font-size:11px;color:var(--muted);margin-top:3px;}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+.note{margin-top:14px;font-size:11px;color:var(--muted);line-height:1.7;background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:100;justify-content:center;align-items:center;flex-direction:column;gap:14px;}
+.loading-overlay.show{display:flex;}
+.loading-spin{width:38px;height:38px;border:3px solid #e5e7eb;border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+.loading-text{font-size:14px;font-weight:700;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="loading-overlay" id="loading">
+  <div class="loading-spin"></div>
+  <div class="loading-text">最新の試合結果を取得中…</div>
+</div>
+<header class="header">
+  <div class="header-inner">
+    <div class="header-title"><h1>W杯2026</h1><span class="year">予想ポイント順位表</span></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="header-meta">更新: <strong id="lastUpdated">—</strong></div>
+      <button onclick="fetchLatest()" id="fetchBtn" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;white-space:nowrap;">⟳ 結果を更新</button>
+    </div>
+  </div>
+</header>
+<div class="tabs"><div class="tabs-inner">
+  <button class="tab active" onclick="switchTab('ranking')">🏆 順位表</button>
+  <button class="tab" onclick="switchTab('results')">⚽ 試合結果</button>
+  <button class="tab" onclick="switchTab('allpicks')">📋 全員の予想</button>
+  <button class="tab" onclick="switchTab('picks')">🔮 優勝予想</button>
+</div></div>
+<div class="container">
+  <div class="tab-panel active" id="panel-ranking">
+    <div class="section-title">現在の順位</div>
+    <table class="ranking-table"><thead><tr>
+      <th>順位 / 参加者</th><th class="right">内訳</th><th class="right" style="padding-right:18px">合計PT</th>
+    </tr></thead><tbody id="rankingBody"></tbody></table>
+    <div class="note">📋 <strong>ルール</strong><br>
+      グループリーグ: 勝ち<strong>3pt</strong>・引き分け<strong>1pt</strong>・負け<strong>0pt</strong><br>
+      決勝トーナメント: 決勝出場ボーナス<strong>+3pt</strong>・準優勝ボーナス<strong>+4pt</strong>・優勝ボーナス<strong>+5pt</strong>・3位ボーナス<strong>+3pt</strong><br>
+      ◎優勝予想的中で<strong>+5pt</strong>ボーナス。同点は同順位で表記。
+    </div>
+  </div>
+  <div class="tab-panel" id="panel-results">
+    <div class="results-meta" id="resultsMeta"></div>
+    <div id="resultsSection"></div>
+  </div>
+  <div class="tab-panel" id="panel-allpicks">
+    <div class="section-title">全員の予想一覧</div>
+    <div class="picks-wrap"><table class="picks-table" id="allPicksTable"></table></div>
+  </div>
+  <div class="tab-panel" id="panel-picks">
+    <div class="section-title">優勝予想チーム別</div>
+    <div class="champ-grid" id="picksGrid"></div>
+  </div>
+</div>
+<script>
+const FLAGS={"メキシコ":"🇲🇽","南アフリカ":"🇿🇦","韓国":"🇰🇷","チェコ":"🇨🇿","カナダ":"🇨🇦","ボスニア":"🇧🇦","カタール":"🇶🇦","スイス":"🇨🇭","ブラジル":"🇧🇷","モロッコ":"🇲🇦","ハイチ":"🇭🇹","スコットランド":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","アメリカ":"🇺🇸","パラグアイ":"🇵🇾","オーストラリア":"🇦🇺","トルコ":"🇹🇷","ドイツ":"🇩🇪","キュラソー":"🇨🇼","コートジボワール":"🇨🇮","エクアドル":"🇪🇨","オランダ":"🇳🇱","日本":"🇯🇵","スウェーデン":"🇸🇪","チュニジア":"🇹🇳","ベルギー":"🇧🇪","エジプト":"🇪🇬","イラン":"🇮🇷","ニュージーランド":"🇳🇿","スペイン":"🇪🇸","カボベルデ":"🇨🇻","サウジアラビア":"🇸🇦","ウルグアイ":"🇺🇾","フランス":"🇫🇷","セネガル":"🇸🇳","イラク":"🇮🇶","ノルウェー":"🇳🇴","アルゼンチン":"🇦🇷","アルジェリア":"🇩🇿","オーストリア":"🇦🇹","ヨルダン":"🇯🇴","ポルトガル":"🇵🇹","コンゴ":"🇨🇩","ウズベキスタン":"🇺🇿","コロンビア":"🇨🇴","イングランド":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","クロアチア":"🇭🇷","ガーナ":"🇬🇭","パナマ":"🇵🇦"};
+const F=t=>FLAGS[t]||'';
+
+const PARTICIPANTS=[
+{name:"阿部 潤也",champ:"フランス",picks:["メキシコ","韓国","スイス","ブラジル","アメリカ","トルコ","ドイツ","オランダ","ベルギー","スペイン","ウルグアイ","フランス","ノルウェー","アルゼンチン","ポルトガル","コロンビア","イングランド","クロアチア"]},
+{name:"潮 崇弘",champ:"フランス",picks:["メキシコ","カナダ","スイス","ブラジル","アメリカ","ドイツ","エクアドル","オランダ","ベルギー","エジプト","スペイン","ウルグアイ","フランス","セネガル","アルゼンチン","ポルトガル","イングランド","クロアチア"]},
+{name:"齊藤 幸孝A",champ:"日本",picks:["メキシコ","ブラジル","モロッコ","アメリカ","トルコ","エクアドル","オランダ","日本","チュニジア","ベルギー","スペイン","ウルグアイ","フランス","アルゼンチン","ポルトガル","イングランド"]},
+{name:"鐙 雅也",champ:"アルゼンチン",picks:["メキシコ","スイス","ブラジル","モロッコ","アメリカ","ドイツ","オランダ","日本","ベルギー","スペイン","ウルグアイ","フランス","セネガル","アルゼンチン","ポルトガル","イングランド","クロアチア"]},
+{name:"毛利 仁人",champ:"ポルトガル",picks:["メキシコ","スイス","ブラジル","モロッコ","アメリカ","ドイツ","エクアドル","オランダ","ベルギー","スペイン","ウルグアイ","フランス","ノルウェー","アルゼンチン","ポルトガル","イングランド","クロアチア"]},
+{name:"齊藤 幸孝B",champ:"ブラジル",picks:["メキシコ","スイス","ブラジル","モロッコ","アメリカ","オーストラリア","ドイツ","エクアドル","オランダ","日本","ベルギー","スペイン","ウルグアイ","フランス","ノルウェー","アルゼンチン","ポルトガル","クロアチア"]},
+{name:"加藤 卓",champ:"ブラジル",picks:["メキシコ","南アフリカ","ボスニア","カタール","ブラジル","パラグアイ","オーストラリア","ドイツ","キュラソー","オランダ","日本","ベルギー","エジプト","スペイン","フランス","アルゼンチン","ウズベキスタン","イングランド","ガーナ"]},
+{name:"落合 崇A",champ:"アルゼンチン",picks:["メキシコ","スイス","ブラジル","モロッコ","アメリカ","ドイツ","オランダ","日本","ベルギー","スペイン","フランス","セネガル","アルゼンチン","ポルトガル","イングランド"]},
+{name:"河野 達朗",champ:"スペイン",picks:["メキシコ","チェコ","ブラジル","アメリカ","ドイツ","オランダ","日本","ベルギー","スペイン","ウルグアイ","フランス","ノルウェー","アルゼンチン","ポルトガル","イングランド","クロアチア"]},
+{name:"落合 崇B",champ:"スペイン",picks:["メキシコ","カナダ","スイス","ブラジル","モロッコ","アメリカ","ドイツ","日本","ベルギー","スペイン","フランス","セネガル","ノルウェー","アルゼンチン","ポルトガル","イングランド"]},
+{name:"長岡 典高",champ:"メキシコ",picks:["メキシコ","スイス","ブラジル","モロッコ","アメリカ","ドイツ","オランダ","日本","ベルギー","スペイン","ウルグアイ","フランス","ノルウェー","アルゼンチン","ポルトガル","イングランド","クロアチア"]},
+{name:"菊地 和寿",champ:"フランス",picks:["メキシコ","カナダ","スイス","ブラジル","モロッコ","アメリカ","ドイツ","オランダ","日本","イラン","スペイン","ウルグアイ","フランス","セネガル","アルゼンチン","ポルトガル","イングランド"]},
+{name:"高田 怜和",champ:"フランス",picks:["メキシコ","カナダ","スイス","ブラジル","アメリカ","ドイツ","オランダ","日本","ベルギー","スペイン","フランス","ノルウェー","アルゼンチン","ポルトガル","イングランド","クロアチア"]},
+{name:"安藤 淳二A",champ:"スペイン",picks:["チェコ","カナダ","ブラジル","アメリカ","ドイツ","コートジボワール","オランダ","ベルギー","エジプト","スペイン","ウルグアイ","フランス","セネガル","ノルウェー","アルゼンチン","ポルトガル","クロアチア","イングランド"]},
+{name:"安藤 淳二B",champ:"ポルトガル",picks:["メキシコ","カナダ","スイス","ブラジル","アメリカ","ドイツ","コートジボワール","オランダ","日本","ベルギー","エジプト","スペイン","フランス","ノルウェー","アルゼンチン","ポルトガル","イングランド","クロアチア"]},
+{name:"鈴木 浩二",champ:"ドイツ",picks:["メキシコ","チェコ","ボスニア","ブラジル","パラグアイ","ドイツ","エクアドル","オランダ","日本","ベルギー","スペイン","フランス","ノルウェー","アルゼンチン","ポルトガル","イングランド","クロアチア"]},
+{name:"高田 健史A",champ:"フランス",picks:["メキシコ","チェコ","スイス","ブラジル","モロッコ","アメリカ","ドイツ","オランダ","日本","ベルギー","スペイン","フランス","ノルウェー","アルゼンチン","ポルトガル","イングランド"]},
+{name:"高田 健史B",champ:"フランス",picks:["メキシコ","カナダ","スイス","ブラジル","モロッコ","アメリカ","ドイツ","コートジボワール","オランダ","ベルギー","スペイン","フランス","セネガル","アルゼンチン","ポルトガル","イングランド","クロアチア"]},
+{name:"松井 孝夫",champ:"フランス",picks:["メキシコ","カナダ","スイス","ブラジル","モロッコ","アメリカ","ドイツ","オランダ","ベルギー","エジプト","スペイン","ウルグアイ","フランス","セネガル","アルゼンチン","ポルトガル","イングランド"]},
+{name:"大縄 順一",champ:"スペイン",picks:["メキシコ","カナダ","ブラジル","モロッコ","アメリカ","ドイツ","オランダ","日本","ベルギー","スペイン","フランス","ノルウェー","アルゼンチン","ポルトガル","イングランド","クロアチア"]},
+];
+
+const GROUPS={
+A:{teams:["メキシコ","南アフリカ","韓国","チェコ"],matches:[
+{dt:"6/12(金)04:00",home:"メキシコ",away:"南アフリカ",hs:2,as:0},
+{dt:"6/12(金)11:00",home:"韓国",away:"チェコ",hs:2,as:1},
+{dt:"6/19(木)01:00",home:"チェコ",away:"南アフリカ",hs:null,as:null},
+{dt:"6/19(木)09:00",home:"メキシコ",away:"韓国",hs:null,as:null},
+{dt:"6/25(木)02:00",home:"チェコ",away:"メキシコ",hs:null,as:null},
+{dt:"6/25(木)02:00",home:"南アフリカ",away:"韓国",hs:null,as:null},
+]},
+B:{teams:["カナダ","ボスニア","カタール","スイス"],matches:[
+{dt:"6/13(土)04:00",home:"カナダ",away:"ボスニア",hs:1,as:1},
+{dt:"6/14(日)04:00",home:"カタール",away:"スイス",hs:1,as:1},
+{dt:"6/19(木)10:00",home:"スイス",away:"ボスニア",hs:null,as:null},
+{dt:"6/20(金)05:00",home:"カナダ",away:"カタール",hs:null,as:null},
+{dt:"6/25(木)05:00",home:"カナダ",away:"スイス",hs:null,as:null},
+{dt:"6/25(木)05:00",home:"ボスニア",away:"カタール",hs:null,as:null},
+]},
+C:{teams:["ブラジル","モロッコ","ハイチ","スコットランド"],matches:[
+{dt:"6/14(日)07:00",home:"ブラジル",away:"モロッコ",hs:1,as:1},
+{dt:"6/15(月)07:00",home:"ハイチ",away:"スコットランド",hs:0,as:1},
+{dt:"6/20(金)07:00",home:"スコットランド",away:"モロッコ",hs:null,as:null},
+{dt:"6/20(金)10:00",home:"ブラジル",away:"ハイチ",hs:null,as:null},
+{dt:"6/25(木)08:00",home:"ブラジル",away:"スコットランド",hs:null,as:null},
+{dt:"6/25(木)08:00",home:"モロッコ",away:"ハイチ",hs:null,as:null},
+]},
+D:{teams:["アメリカ","パラグアイ","オーストラリア","トルコ"],matches:[
+{dt:"6/13(土)10:00",home:"アメリカ",away:"パラグアイ",hs:4,as:1},
+{dt:"6/15(月)04:00",home:"オーストラリア",away:"トルコ",hs:2,as:0},
+{dt:"6/20(金)04:00",home:"アメリカ",away:"オーストラリア",hs:null,as:null},
+{dt:"6/21(土)07:00",home:"トルコ",away:"パラグアイ",hs:null,as:null},
+{dt:"6/26(金)02:00",home:"アメリカ",away:"トルコ",hs:null,as:null},
+{dt:"6/26(金)02:00",home:"パラグアイ",away:"オーストラリア",hs:null,as:null},
+]},
+E:{teams:["ドイツ","キュラソー","コートジボワール","エクアドル"],matches:[
+{dt:"6/15(月)01:00",home:"ドイツ",away:"キュラソー",hs:7,as:1},
+{dt:"6/15(月)08:00",home:"コートジボワール",away:"エクアドル",hs:1,as:0},
+{dt:"6/21(土)04:00",home:"ドイツ",away:"コートジボワール",hs:null,as:null},
+{dt:"6/21(土)10:00",home:"エクアドル",away:"キュラソー",hs:null,as:null},
+{dt:"6/26(金)05:00",home:"ドイツ",away:"エクアドル",hs:null,as:null},
+{dt:"6/26(金)05:00",home:"キュラソー",away:"コートジボワール",hs:null,as:null},
+]},
+F:{teams:["オランダ","日本","スウェーデン","チュニジア"],matches:[
+{dt:"6/16(火)01:00",home:"スウェーデン",away:"チュニジア",hs:5,as:1},
+{dt:"6/16(火)10:00",home:"オランダ",away:"日本",hs:2,as:2},
+{dt:"6/21(土)01:00",home:"オランダ",away:"スウェーデン",hs:null,as:null},
+{dt:"6/22(日)10:00",home:"チュニジア",away:"日本",hs:null,as:null},
+{dt:"6/27(土)02:00",home:"日本",away:"スウェーデン",hs:null,as:null},
+{dt:"6/27(土)02:00",home:"チュニジア",away:"オランダ",hs:null,as:null},
+]},
+G:{teams:["ベルギー","エジプト","イラン","ニュージーランド"],matches:[
+{dt:"6/16(火)04:00",home:"ベルギー",away:"エジプト",hs:1,as:1},
+{dt:"6/17(水)07:00",home:"イラン",away:"ニュージーランド",hs:2,as:2},
+{dt:"6/22(日)04:00",home:"ベルギー",away:"イラン",hs:null,as:null},
+{dt:"6/22(日)07:00",home:"ニュージーランド",away:"エジプト",hs:null,as:null},
+{dt:"6/27(土)05:00",home:"ベルギー",away:"ニュージーランド",hs:null,as:null},
+{dt:"6/27(土)05:00",home:"エジプト",away:"イラン",hs:null,as:null},
+]},
+H:{teams:["スペイン","カボベルデ","サウジアラビア","ウルグアイ"],matches:[
+{dt:"6/16(火)07:00",home:"スペイン",away:"カボベルデ",hs:0,as:0},
+{dt:"6/16(火)07:00",home:"サウジアラビア",away:"ウルグアイ",hs:1,as:1},
+{dt:"6/22(日)01:00",home:"スペイン",away:"サウジアラビア",hs:null,as:null},
+{dt:"6/22(日)04:00",home:"ウルグアイ",away:"カボベルデ",hs:null,as:null},
+{dt:"6/27(土)08:00",home:"スペイン",away:"ウルグアイ",hs:null,as:null},
+{dt:"6/27(土)08:00",home:"カボベルデ",away:"サウジアラビア",hs:null,as:null},
+]},
+I:{teams:["フランス","セネガル","イラク","ノルウェー"],matches:[
+{dt:"6/17(水)04:00",home:"フランス",away:"セネガル",hs:3,as:1},
+{dt:"6/17(水)10:00",home:"イラク",away:"ノルウェー",hs:1,as:4},
+{dt:"6/23(月)01:00",home:"フランス",away:"イラク",hs:null,as:null},
+{dt:"6/23(月)07:00",home:"ノルウェー",away:"セネガル",hs:null,as:null},
+{dt:"6/27(土)11:00",home:"フランス",away:"ノルウェー",hs:null,as:null},
+{dt:"6/27(土)11:00",home:"セネガル",away:"イラク",hs:null,as:null},
+]},
+J:{teams:["アルゼンチン","アルジェリア","オーストリア","ヨルダン"],matches:[
+{dt:"6/17(水)07:00",home:"アルゼンチン",away:"アルジェリア",hs:3,as:0},
+{dt:"6/18(木)10:00",home:"オーストリア",away:"ヨルダン",hs:3,as:1},
+{dt:"6/23(月)04:00",home:"アルゼンチン",away:"オーストリア",hs:null,as:null},
+{dt:"6/23(月)10:00",home:"ヨルダン",away:"アルジェリア",hs:null,as:null},
+{dt:"6/28(日)02:00",home:"アルゼンチン",away:"ヨルダン",hs:null,as:null},
+{dt:"6/28(日)02:00",home:"アルジェリア",away:"オーストリア",hs:null,as:null},
+]},
+K:{teams:["ポルトガル","コンゴ","ウズベキスタン","コロンビア"],matches:[
+{dt:"6/18(木)02:00",home:"ポルトガル",away:"コンゴ",hs:1,as:1},
+{dt:"6/19(木)07:00",home:"ウズベキスタン",away:"コロンビア",hs:null,as:null},
+{dt:"6/24(水)04:00",home:"ポルトガル",away:"ウズベキスタン",hs:null,as:null},
+{dt:"6/24(水)10:00",home:"コロンビア",away:"コンゴ",hs:null,as:null},
+{dt:"6/28(日)05:00",home:"コロンビア",away:"ポルトガル",hs:null,as:null},
+{dt:"6/28(日)05:00",home:"コンゴ",away:"ウズベキスタン",hs:null,as:null},
+]},
+L:{teams:["イングランド","クロアチア","ガーナ","パナマ"],matches:[
+{dt:"6/18(木)05:00",home:"イングランド",away:"クロアチア",hs:4,as:2},
+{dt:"6/19(木)04:00",home:"ガーナ",away:"パナマ",hs:null,as:null},
+{dt:"6/24(水)01:00",home:"イングランド",away:"ガーナ",hs:null,as:null},
+{dt:"6/24(水)07:00",home:"パナマ",away:"クロアチア",hs:null,as:null},
+{dt:"6/28(日)08:00",home:"イングランド",away:"パナマ",hs:null,as:null},
+{dt:"6/28(日)08:00",home:"クロアチア",away:"ガーナ",hs:null,as:null},
+]},
+};
+
+const KNOCKOUT=[
+{round:"ラウンド32",matches:[
+{dt:"6/29(日)04:00",home:"1位A",away:"2位B",hs:null,as:null},
+{dt:"6/29(日)07:30",home:"1位C",away:"2位F",hs:null,as:null},
+{dt:"6/30(月)02:00",home:"1位E",away:"3位*",hs:null,as:null},
+{dt:"6/30(月)05:30",home:"1位B",away:"2位A",hs:null,as:null},
+{dt:"6/30(月)11:00",home:"1位F",away:"2位E",hs:null,as:null},
+{dt:"7/1(火)02:00",home:"1位D",away:"3位*",hs:null,as:null},
+{dt:"7/1(火)05:30",home:"1位G",away:"2位H",hs:null,as:null},
+{dt:"7/1(火)11:00",home:"1位I",away:"2位J",hs:null,as:null},
+{dt:"7/2(水)02:00",home:"1位K",away:"3位*",hs:null,as:null},
+{dt:"7/2(水)05:30",home:"1位H",away:"2位G",hs:null,as:null},
+{dt:"7/2(水)11:00",home:"1位J",away:"2位I",hs:null,as:null},
+{dt:"7/3(木)02:00",home:"1位L",away:"3位*",hs:null,as:null},
+{dt:"7/3(木)05:30",home:"勝者R32①",away:"勝者R32②",hs:null,as:null},
+{dt:"7/3(木)11:00",home:"勝者R32③",away:"勝者R32④",hs:null,as:null},
+{dt:"7/4(金)02:00",home:"勝者R32⑤",away:"勝者R32⑥",hs:null,as:null},
+{dt:"7/4(金)05:30",home:"勝者R32⑦",away:"勝者R32⑧",hs:null,as:null},
+]},
+{round:"ラウンド16",matches:[
+{dt:"7/5(土)04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/5(土)08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/6(日)04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/6(日)08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/7(月)04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/7(月)08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/8(火)04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+{dt:"7/8(火)08:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
+]},
+{round:"準々決勝",matches:[
+{dt:"7/10(木)04:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
+{dt:"7/10(木)08:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
+{dt:"7/11(金)04:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
+{dt:"7/11(金)08:00",home:"R16勝者",away:"R16勝者",hs:null,as:null},
+]},
+{round:"準決勝",matches:[
+{dt:"7/15(火)04:00",home:"QF勝者",away:"QF勝者",hs:null,as:null},
+{dt:"7/16(水)04:00",home:"QF勝者",away:"QF勝者",hs:null,as:null},
+]},
+{round:"3位決定戦",matches:[
+{dt:"7/19(日)04:00",home:"SF敗者",away:"SF敗者",hs:null,as:null},
+]},
+{round:"決勝",matches:[
+{dt:"7/20(月)04:00",home:"SF勝者",away:"SF勝者",hs:null,as:null},
+]},
+];
+
+let champion=null;
+let lastUpdated=null;
+
+function calcGroupStandings(){
+  const r={};
+  for(const[k,g]of Object.entries(GROUPS)){
+    const p={};g.teams.forEach(t=>p[t]={pts:0,gd:0,gf:0});
+    for(const m of g.matches){
+      if(m.hs===null)continue;
+      p[m.home].gf+=m.hs;p[m.home].gd+=m.hs-m.as;
+      p[m.away].gf+=m.as;p[m.away].gd+=m.as-m.hs;
+      if(m.hs>m.as)p[m.home].pts+=3;
+      else if(m.hs===m.as){p[m.home].pts+=1;p[m.away].pts+=1;}
+      else p[m.away].pts+=3;
+    }
+    r[k]=Object.entries(p).sort((a,b)=>b[1].pts-a[1].pts||b[1].gd-a[1].gd||b[1].gf-a[1].gf).map(([t])=>t);
+  }
+  return r;
+}
+
+function calcScore(p){
+  const s=new Set(p.picks);let gl=0;
+  for(const g of Object.values(GROUPS))for(const m of g.matches){
+    if(m.hs===null)continue;
+    if(s.has(m.home)){if(m.hs>m.as)gl+=3;else if(m.hs===m.as)gl+=1;}
+    if(s.has(m.away)){if(m.as>m.hs)gl+=3;else if(m.hs===m.as)gl+=1;}
+  }
+  const b=(champion&&champion===p.champ)?5:0;
+  return{gl,bonus:b,total:gl+b};
+}
+
+function calcTeamPts(grpKey, team){
+  let pts=0;
+  for(const m of GROUPS[grpKey].matches){
+    if(m.hs===null)continue;
+    if(m.home===team){if(m.hs>m.as)pts+=3;else if(m.hs===m.as)pts+=1;}
+    if(m.away===team){if(m.as>m.hs)pts+=3;else if(m.hs===m.as)pts+=1;}
+  }
+  return pts;
+}
+
+function renderRanking(){
+  const sc=PARTICIPANTS.map(p=>({...p,...calcScore(p)})).sort((a,b)=>b.total-a.total);
+  const medals=['🥇','🥈','🥉'];
+  let rank=1,rows=[];
+  for(let i=0;i<sc.length;){
+    let j=i;while(j<sc.length&&sc[j].total===sc[i].total)j++;
+    const tie=j-i>1;
+    for(let k=i;k<j;k++){
+      const s=sc[k];const hit=champion&&champion===s.champ;const isTop=rank<=3;
+      rows.push(`<tr class="${isTop?'top3':''}">
+        <td><div class="rank-cell">
+          <div class="${isTop&&!tie?'rank-medal':'rank-num'}">${isTop&&!tie?medals[rank-1]:(tie?`${rank}T`:rank)}</div>
+          <div><div class="player-name">${s.name}</div>
+          <div class="champ-pick">◎ <span class="flag">${F(s.champ)}</span><span class="ctag ${hit?'hit':''}">${s.champ}${hit?' ✓':''}</span></div></div>
+        </div></td>
+        <td class="pts-cell"><div class="breakdown"><span class="bd">GL:${s.gl}pt</span>${s.bonus?`<span class="bd pos">優勝+${s.bonus}</span>`:''}</div></td>
+        <td class="pts-cell"><div class="pts-big">${s.total}</div><div class="pts-label">PTS</div></td>
+      </tr>`);
+    }
+    rank+=j-i;i=j;
+  }
+  document.getElementById('rankingBody').innerHTML=rows.join('');
+}
+
+function renderResults(){
+  const st=calcGroupStandings();
+  // 完了試合チップを試合結果タブに表示
+  let done=0,total=0;
+  for(const g of Object.values(GROUPS))for(const m of g.matches){total++;if(m.hs!==null)done++;}
+  document.getElementById('resultsMeta').innerHTML=
+    `<div class="chip chip-blue">⚽ 完了試合 <strong>${done}/${total}</strong></div>`+
+    (champion?`<div class="chip chip-gold">🏆 <strong>${F(champion)}${champion}</strong></div>`:'');
+
+  let html='<div class="phase-title">グループステージ</div>';
+  for(const[k,g]of Object.entries(GROUPS)){
+    const order=st[k]||g.teams;
+    // 順位を1チームずつ改行で表示
+    const sRows=order.map((t,i)=>{
+      const pts=st[k]?calcTeamPts(k,t):null;
+      return `<div class="standing-row"><span class="standing-rank">${i+1}</span><span class="flag">${F(t)}</span><span>${t}</span>${pts!==null?`<span class="standing-pts">${pts}pt</span>`:''}</div>`;
+    }).join('');
+    html+=`<div class="group-block"><div class="group-header"><span class="group-label">G-${k}</span><div class="group-standing">${sRows}</div></div>
+    ${g.matches.map(m=>{const done=m.hs!==null;return`<div class="match-row">
+      <div class="match-datetime">${m.dt}</div>
+      <div class="match-teams">
+        <div class="team-a"><span class="tn">${m.home}</span><span class="flag">${F(m.home)}</span></div>
+        <div class="score-box"><span class="score-num">${done?m.hs:'–'}</span><span class="score-sep">:</span><span class="score-num">${done?m.as:'–'}</span></div>
+        <div class="team-b"><span class="flag">${F(m.away)}</span><span class="tn">${m.away}</span></div>
+      </div>
+      <span class="status-badge ${done?'badge-done':'badge-up'}">${done?'終了':'予定'}</span>
+    </div>`;}).join('')}</div>`;
+  }
+  for(const ph of KNOCKOUT){
+    html+=`<div class="phase-title">${ph.round}</div><div class="group-block">`;
+    html+=ph.matches.map(m=>{const done=m.hs!==null;const hf=F(m.home);const af=F(m.away);return`<div class="match-row">
+      <div class="match-datetime">${m.dt}</div>
+      <div class="match-teams">
+        <div class="team-a"><span class="tn">${m.home}</span>${hf?`<span class="flag">${hf}</span>`:''}</div>
+        <div class="score-box"><span class="score-num">${done?m.hs:'–'}</span><span class="score-sep">:</span><span class="score-num">${done?m.as:'–'}</span></div>
+        <div class="team-b">${af?`<span class="flag">${af}</span>`:''}<span class="tn">${m.away}</span></div>
+      </div>
+      <span class="status-badge ${done?'badge-done':'badge-tbd'}">${done?'終了':'予定'}</span>
+    </div>`;}).join('');
+    html+=`</div>`;
+  }
+  document.getElementById('resultsSection').innerHTML=html;
+}
+
+function renderAllPicks(){
+  const gE=Object.entries(GROUPS);
+  const all=[];gE.forEach(([k,g])=>g.teams.forEach(t=>all.push({team:t,group:k})));
+  const sc=PARTICIPANTS.map(p=>({...p,...calcScore(p)}));
+  let th=`<thead><tr><th class="name-cell" rowspan="2" style="position:sticky;left:0;background:#e5e7eb;z-index:2">参加者</th>
+    ${gE.map(([k,g])=>`<th colspan="${g.teams.length}" style="border-left:2px solid #d1d5db">G-${k}</th>`).join('')}
+    <th rowspan="2" style="background:#dbeafe;color:var(--blue)">合計</th></tr><tr>
+    ${all.map(({team},i)=>{const bl=i>0&&all[i-1].group!==all[i].group?'border-left:2px solid #d1d5db;':'';return`<th style="${bl}">${team}</th>`;}).join('')}
+  </tr></thead>`;
+  const tb='<tbody>'+sc.map(p=>{const s=new Set(p.picks);return`<tr>
+    <td class="name-cell" style="position:sticky;left:0;background:#fff;z-index:1">${p.name}</td>
+    ${all.map(({team,group},i)=>{const bl=i>0&&all[i-1].group!==all[i].group?'border-left:2px solid #d1d5db;':'';
+      if(team===p.champ)return`<td style="${bl}">◎</td>`;
+      if(s.has(team))return`<td style="${bl}"><span class="mark-pick">●</span></td>`;
+      return`<td style="${bl}"></td>`;}).join('')}
+    <td class="pts-cell-sm">${p.total}</td></tr>`;}).join('')+'</tbody>';
+  document.getElementById('allPicksTable').innerHTML=th+tb;
+}
+
+function renderPicks(){
+  const map={};for(const p of PARTICIPANTS){map[p.champ]=map[p.champ]||[];map[p.champ].push(p.name);}
+  document.getElementById('picksGrid').innerHTML=Object.entries(map).sort((a,b)=>b[1].length-a[1].length)
+    .map(([t,ns])=>{const hit=champion===t;return`<div class="champ-card ${hit?'hit':''}">
+      <div class="champ-team ${hit?'hit':''}">${hit?'🏆 ':''}<span>${F(t)}</span>${t}</div>
+      <div class="champ-names">${ns.join('、')}</div><div class="champ-count">${ns.length}名が予想</div>
+    </div>`;}).join('');
+}
+
+async function fetchLatest(){
+  const btn=document.getElementById('fetchBtn');
+  btn.disabled=true;btn.textContent='取得中…';
+  document.getElementById('loading').classList.add('show');
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:2000,
+        tools:[{type:"web_search_20250305",name:"web_search"}],
+        messages:[{role:"user",content:`今日は2026年6月18日。W杯2026の最新グループリーグ・決勝トーナメント試合結果を検索してください。以下の既知結果以降の新しい確定結果のみ教えてください。
+既知: メキシコ2-0南アフリカ, 韓国2-1チェコ, カナダ1-1ボスニア, アメリカ4-1パラグアイ, カタール1-1スイス, ブラジル1-1モロッコ, ハイチ0-1スコットランド, オーストラリア2-0トルコ, ドイツ7-1キュラソー, コートジボワール1-0エクアドル, スウェーデン5-1チュニジア, オランダ2-2日本, ベルギー1-1エジプト, スペイン0-0カボベルデ, サウジアラビア1-1ウルグアイ, フランス3-1セネガル, イラク1-4ノルウェー, アルゼンチン3-0アルジェリア, オーストリア3-1ヨルダン, ポルトガル1-1コンゴ, イラン2-2ニュージーランド, イングランド4-2クロアチア
+JSONのみ返してください: {"matches":[{"group":"A","home":"チーム","away":"チーム","homeScore":数値,"awayScore":数値}],"champion":null,"summary":"サマリー"}`}]})
+    });
+    const data=await res.json();
+    const text=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    let parsed=null;
+    try{const m=text.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);}catch(e){}
+    if(parsed&&parsed.matches){
+      for(const r of parsed.matches){
+        const g=GROUPS[r.group];if(!g)continue;
+        const m=g.matches.find(m=>m.home===r.home&&m.away===r.away);
+        if(m&&r.homeScore!==null){m.hs=r.homeScore;m.as=r.awayScore;}
+      }
+      if(parsed.champion)champion=parsed.champion;
+      lastUpdated=new Date().toLocaleString('ja-JP')+(parsed.summary?` — ${parsed.summary}`:'');
+    }else{
+      lastUpdated=new Date().toLocaleString('ja-JP');
+    }
+  }catch(e){lastUpdated=new Date().toLocaleString('ja-JP')+' ⚠️';}
+  btn.disabled=false;btn.textContent='⟳ 結果を更新';
+  document.getElementById('loading').classList.remove('show');
+  document.getElementById('lastUpdated').textContent=lastUpdated;
+  renderAll();
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['ranking','results','allpicks','picks'][i]===name));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if(name==='allpicks')renderAllPicks();
+}
+
+function renderAll(){renderRanking();renderResults();renderPicks();}
+
+// 初回は静的データで即表示
+renderAll();
+document.getElementById('lastUpdated').textContent='6/17時点（更新ボタンで最新取得）';
+</script>
+</body>
+</html>
