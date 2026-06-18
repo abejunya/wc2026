@@ -599,7 +599,7 @@ function renderToday(){
   for(const[grpKey,g] of Object.entries(GROUPS)){
     for(const m of g.matches){
       const dtDate = m.dt.split('|')[0]; // "6/19(金)"
-      const dtClean = dtDate.replace(/\([月火水木金土日]\)/,''); // "6/19"
+      const dtClean = dtDate.indexOf('(')>=0 ? dtDate.substring(0,dtDate.indexOf('(')) : dtDate;
       if(dtClean === todayStr) todayMatches.push({...m, group:grpKey});
     }
   }
