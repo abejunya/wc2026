@@ -181,7 +181,7 @@ A:{teams:["メキシコ","南アフリカ","韓国","チェコ"],matches:[
 B:{teams:["カナダ","ボスニア","カタール","スイス"],matches:[
 {dt:"6/13(土)04:00",home:"カナダ",away:"ボスニア",hs:1,as:1},
 {dt:"6/14(日)04:00",home:"カタール",away:"スイス",hs:1,as:1},
-{dt:"6/19(木)10:00",home:"スイス",away:"ボスニア",hs:null,as:null},
+{dt:"6/19(木)10:00",home:"スイス",away:"ボスニア",hs:1,as:1},
 {dt:"6/20(金)05:00",home:"カナダ",away:"カタール",hs:null,as:null},
 {dt:"6/25(木)05:00",home:"カナダ",away:"スイス",hs:null,as:null},
 {dt:"6/25(木)05:00",home:"ボスニア",away:"カタール",hs:null,as:null},
@@ -252,7 +252,7 @@ J:{teams:["アルゼンチン","アルジェリア","オーストリア","ヨル
 ]},
 K:{teams:["ポルトガル","コンゴ","ウズベキスタン","コロンビア"],matches:[
 {dt:"6/18(木)02:00",home:"ポルトガル",away:"コンゴ",hs:1,as:1},
-{dt:"6/19(木)07:00",home:"ウズベキスタン",away:"コロンビア",hs:null,as:null},
+{dt:"6/19(木)07:00",home:"ウズベキスタン",away:"コロンビア",hs:1,as:2},
 {dt:"6/24(水)04:00",home:"ポルトガル",away:"ウズベキスタン",hs:null,as:null},
 {dt:"6/24(水)10:00",home:"コロンビア",away:"コンゴ",hs:null,as:null},
 {dt:"6/28(日)05:00",home:"コロンビア",away:"ポルトガル",hs:null,as:null},
@@ -260,7 +260,7 @@ K:{teams:["ポルトガル","コンゴ","ウズベキスタン","コロンビア
 ]},
 L:{teams:["イングランド","クロアチア","ガーナ","パナマ"],matches:[
 {dt:"6/18(木)05:00",home:"イングランド",away:"クロアチア",hs:4,as:2},
-{dt:"6/19(木)04:00",home:"ガーナ",away:"パナマ",hs:null,as:null},
+{dt:"6/19(木)04:00",home:"ガーナ",away:"パナマ",hs:1,as:0},
 {dt:"6/24(水)01:00",home:"イングランド",away:"ガーナ",hs:null,as:null},
 {dt:"6/24(水)07:00",home:"パナマ",away:"クロアチア",hs:null,as:null},
 {dt:"6/28(日)08:00",home:"イングランド",away:"パナマ",hs:null,as:null},
@@ -498,7 +498,7 @@ function renderAll(){renderRanking();renderResults();renderPicks();}
 
 // 初回は静的データで即表示
 renderAll();
-document.getElementById('lastUpdated').textContent='6/17時点（更新ボタンで最新取得）';
+document.getElementById('lastUpdated').textContent='6/18時点（スイス1-1ボスニア、ガーナ1-0パナマ、コロンビア2-1ウズベキスタン）';
 </script>
 </body>
 </html>
