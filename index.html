@@ -100,6 +100,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 .loading-text{font-size:14px;font-weight:700;color:var(--muted);}
 .today-match{background:#fff;border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden;}
 .today-match-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#f3f4f6;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap;}
+.today-dt-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.today-badge-wrap{display:flex;gap:4px;align-items:center;flex-shrink:0;}
 .today-time{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);flex-shrink:0;}
 .today-vs{display:flex;align-items:center;gap:10px;flex:1;justify-content:center;}
 .today-team{font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px;}
@@ -119,10 +121,11 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 
 /* スマホ対応 */
 @media (max-width: 600px){
-  .today-match-header{flex-direction:column;align-items:stretch;gap:6px;}
-  .today-vs{justify-content:space-between;width:100%;}
-  .today-time{text-align:center;}
-  .today-match-header > div:last-child{justify-content:center;}
+  .today-match-header{flex-direction:column;align-items:center;gap:6px;text-align:center;}
+  .today-dt-wrap{justify-content:center;}
+  .today-vs{justify-content:center;width:100%;}
+  .today-badge-wrap{justify-content:center;}
+  .today-time{text-align:center;white-space:nowrap;}
   .today-body{grid-template-columns:1fr;}
   .today-team{font-size:14px;}
   .match-datetime{flex-direction:row;flex-wrap:wrap;}
@@ -704,24 +707,23 @@ function buildMatchCard(m, opts){
   const headerBg = opts.past ? 'background:#f8f9fa' : '';
   const scoreSize = opts.past ? 'font-size:22px' : '';
   const flagSize = opts.past ? '16px' : '20px';
+  const dtLabel = opts.past ? `${dtDate} ${time}` : `${time} JST`;
 
   let card = `<div class="today-match">
     <div class="today-match-header" style="${headerBg}">
-      ${opts.past ? `<div style="font-size:10px;color:var(--muted);flex-shrink:0;line-height:1.4">${dtDate}<br>${time}</div>` : `<span class="today-time">${time} JST</span>`}
+      <div class="today-dt-wrap">
+        <span class="today-time">${dtLabel}</span>${tvHtml}
+      </div>
       <div class="today-vs">
         <span class="today-team"><span style="font-size:${flagSize}">${F(m.home)}</span>${m.home}</span>
         <span class="today-score ${done?'done':''}" style="${scoreSize}"> ${done?m.hs:'－'} : ${done?m.as:'－'} </span>
         <span class="today-team">${m.away}<span style="font-size:${flagSize}">${F(m.away)}</span></span>
       </div>
-      <div style="display:flex;gap:4px;align-items:center">${tvHtml}<span class="today-badge-${done?'done':'up'}">${done?'終了':'予定'}</span></div>
+      <div class="today-badge-wrap"><span class="today-badge-${done?'done':'up'}">${done?'終了':'予定'}</span></div>
     </div>`;
 
-  if(opts.past){
-    // 過去の試合はAIコメントのみ
-    if(ai) card += `<div style="padding:10px 14px;background:#fff"><div class="today-ai-label">🤖 AIコメント</div><div class="today-ai-text">${ai}</div></div>`;
-  } else {
-    // 今日明日は予想メンバー＋AIコメント
-    card += `<div class="today-body">
+  // 今日明日・過去ともに予想メンバー＋AIコメントを表示
+  card += `<div class="today-body">
       <div class="today-pickers">
         <div class="today-pickers-title"><span style="font-size:14px">${F(m.home)}</span>${m.home}を選んでいる人</div>
         <div class="today-pickers-names">${pickerTags(homePickers,homeChamp)}</div>
@@ -732,7 +734,6 @@ function buildMatchCard(m, opts){
       </div>
       ${ai?`<div class="today-ai-comment"><div class="today-ai-label">🤖 AIコメント</div><div class="today-ai-text">${ai}</div></div>`:''}
     </div>`;
-  }
   card += '</div>';
   return card;
 }
