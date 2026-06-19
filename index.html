@@ -152,10 +152,18 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
       ◎優勝予想的中で<strong>+5pt</strong>ボーナス。同点は同順位で表記。
     </div>
   </div>
-  <div class="tab-panel" id="panel-today"><div id="todaySection"></div></div>
-  <div class="tab-panel" id="panel-results">
-    <div class="results-meta" id="resultsMeta"></div>
-    <div id="resultsSection"></div>
+  <div class="tab-panel" id="panel-schedule">
+    <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--border);overflow-x:auto">
+      <button id="schtab-results" onclick="switchSchTab('results')" style="padding:8px 14px;font-size:12px;font-weight:700;color:var(--accent);background:none;border:none;border-bottom:3px solid var(--accent);cursor:pointer;font-family:'Noto Sans JP',sans-serif;white-space:nowrap">試合結果</button>
+      <button id="schtab-upcoming" onclick="switchSchTab('upcoming')" style="padding:8px 14px;font-size:12px;font-weight:700;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:'Noto Sans JP',sans-serif;white-space:nowrap">今日・明日</button>
+      <button id="schtab-past" onclick="switchSchTab('past')" style="padding:8px 14px;font-size:12px;font-weight:700;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:'Noto Sans JP',sans-serif;white-space:nowrap">過去の試合</button>
+    </div>
+    <div id="schpanel-results">
+      <div class="results-meta" id="resultsMeta"></div>
+      <div id="resultsSection"></div>
+    </div>
+    <div id="schpanel-upcoming" style="display:none"><div id="upcomingSection"></div></div>
+    <div id="schpanel-past" style="display:none"><div id="pastSection"></div></div>
   </div>
   <div class="tab-panel" id="panel-allpicks">
     <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid var(--border);">
@@ -523,11 +531,24 @@ JSONのみ返してください: {"matches":[{"group":"A","home":"チーム","aw
 }
 
 function switchTab(name){
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['ranking','today','results','allpicks','picks'][i]===name));
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['ranking','schedule','allpicks','picks'][i]===name));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
   if(name==='allpicks'){renderAllPicks();renderTeamPts();}
-  if(name==='today')renderToday();
+  if(name==='schedule')renderSchedule();
+}
+function switchSchTab(name){
+  ['results','upcoming','past'].forEach(n=>{
+    document.getElementById('schpanel-'+n).style.display = n===name?'block':'none';
+    const btn=document.getElementById('schtab-'+n);
+    btn.style.color = n===name?'var(--accent)':'var(--muted)';
+    btn.style.borderBottom = n===name?'3px solid var(--accent)':'3px solid transparent';
+  });
+}
+function renderSchedule(){
+  renderResults();      // 試合結果サブタブ
+  renderUpcoming();     // 今日・明日サブタブ
+  renderPast();         // 過去の試合サブタブ
 }
 function switchSubtab(name){
   ['picks','teampts'].forEach(n=>{
@@ -589,153 +610,143 @@ function renderTeamPts(){
 
 function renderAll(){renderRanking();renderResults();renderPicks();}
 
-function renderToday(){
+// ===== 試合カード生成ヘルパー =====
+function getAIComments(){
+  return {
+    'チェコ_南アフリカ': '初戦どちらも黒星の崖っぷち対決は1-1のドロー。両チームとも最終節が事実上の決勝戦に。河野さん・安藤淳二Aさん・鈴木さん・高田健史Aさんが選ぶチェコ、加藤さんが選ぶ南アフリカ、いずれも勝ち点を伸ばせませんでした。',
+    'スイス_ボスニア': '第1節でカタールと引き分けたスイスがこの試合で覚醒、4-1の大勝でグループB首位に浮上！スイスを選ぶ阿部さん・潮さん・鐙さん・毛利さん・齊藤幸孝Bさん・落合崇Aさん・落合崇Bさん・長岡さん・菊地さん・高田怜和さん・安藤淳二Bさん・高田健史Aさん・高田健史Bさん・松井さんの14名に+3pt。加藤さん・鈴木さんが選ぶボスニアは苦しい展開に。',
+    'カナダ_カタール': 'カナダのホームゲーム。グループBは第1節で全4チームがドローという異例の混戦でしたが、スイスが4-1で抜け出したため、カナダ・ボスニア・カタールが2位を争います。エース、アルフォンソ・デイヴィスの突破力が鍵。カナダを選ぶ潮さん・落合崇Bさん・菊地さん・高田怜和さん・安藤淳二Aさん・安藤淳二Bさん・高田健史Bさん・松井さん・大縄さんの9名が注目、カタール選択は加藤さんのみ。',
+    'メキシコ_韓国': 'NHK地上波中継の注目カード！メキシコは南アフリカに2-0完勝、韓国もチェコを2-1で逆転撃破と両者好調。勝てばグループ突破がほぼ確実に。参加者20名中18名がメキシコを選択、韓国を選ぶのは阿部さんのみ（阿部さんはメキシコ・韓国の両取り）。メキシコ勝利なら大多数が横並びで差がつきにくく、韓国勝利なら阿部さんが一歩抜け出します。長岡さんは◎メキシコ優勝予想で特に熱い一戦。',
+    'アメリカ_オーストラリア': 'NHK中継。アメリカは第1節でパラグアイを4-1と圧倒、バログンの2発など攻撃陣が爆発。オーストラリアもトルコを2-0で下して好発進（スプレッドシート反映値）。アメリカを選ぶ参加者は20名中19名と最多、オーストラリア選択は齊藤幸孝Bさんのみ。アメリカ勝利なら19名まとめて+3pt。',
+    'スコットランド_モロッコ': 'フジテレビ中継。スコットランドはハイチを1-0で下して白星発進、モロッコはブラジルと1-1のドローと健闘。スコットランドを選ぶ阿部さん・高田怜和さんの2名、モロッコを選ぶ鐙さん・毛利さん・齊藤幸孝Bさん・落合崇Aさん・落合崇Bさん・長岡さん・菊地さん・高田健史Aさん・高田健史Bさん・松井さん・大縄さんの11名の対決。',
+    'ブラジル_ハイチ': 'NHK中継。優勝候補ブラジルは初戦モロッコと1-1ドローと足踏み。エース、ネイマールが練習復帰したとの報もあり出場が期待されます。ハイチはスコットランドに0-1と惜敗。ブラジルを選ぶ参加者は全20名と満票！ハイチ選択の加藤さんは◎ブラジルなので複雑かも（ブラジル勝利が長期的に吉）。',
+    'トルコ_パラグアイ': 'オーストラリアに0-2で敗れたトルコと、アメリカに1-4と大敗したパラグアイの初戦黒星対決。トルコを選ぶ阿部さん・齊藤幸孝Aさん・落合崇Aさん・落合崇Bさん・高田怜和さん・大縄さんの6名、パラグアイを選ぶ加藤さん・鈴木さんの2名。グループD2位争いに直結する一戦。',
+  };
+}
+
+function jstDateStr(offsetDays){
   const now = new Date();
-  const jst = new Date(now.getTime() + (9*60*60*1000));
-  const toDateStr = d => {
-    const j = new Date(d.getTime() + (9*60*60*1000));
-    return (j.getUTCMonth()+1) + '/' + j.getUTCDate();
-  };
-  const todayStr    = toDateStr(now);
-  const tomorrowStr = toDateStr(new Date(now.getTime() + 24*60*60*1000));
+  const j = new Date(now.getTime() + (9*60*60*1000) + (offsetDays||0)*24*60*60*1000);
+  return (j.getUTCMonth()+1) + '/' + j.getUTCDate();
+}
 
-  const getMatches = (dateStr) => {
-    const arr = [];
-    for(const[grpKey,g] of Object.entries(GROUPS)){
-      for(const m of g.matches){
-        const dtDate = m.dt.split('|')[0];
-        const slash  = dtDate.indexOf('/');
-        const paren  = dtDate.indexOf('(');
-        const mm = dtDate.substring(0, slash);
-        const dd = paren > 0 ? dtDate.substring(slash+1, paren) : dtDate.substring(slash+1);
-        const ds = mm + '/' + dd;
-        if(ds === dateStr) arr.push({...m, group:grpKey});
-      }
-    }
-    arr.sort((a,b)=>(a.dt.split('|')[1]||'').localeCompare(b.dt.split('|')[1]||''));
-    return arr;
-  };
+function matchDateStr(dt){
+  const dtDate = dt.split('|')[0];
+  const slash = dtDate.indexOf('/');
+  const paren = dtDate.indexOf('(');
+  const mm = dtDate.substring(0, slash);
+  const dd = paren > 0 ? dtDate.substring(slash+1, paren) : dtDate.substring(slash+1);
+  return mm + '/' + dd;
+}
 
-  const AI_COMMENTS = {
-    // 6/19 終了試合
-    'チェコ_南アフリカ': '初戦どちらも黒星の崖っぷち対決は1-1のドローに終わりました。両チームはグループ突破へ望みをつないだものの、次の最終節が事実上の決勝戦に。河野さん・安藤淳二Aさん・鈴木さん・高田健史Aさんが選ぶチェコは勝ち点2。加藤さんが選ぶ南アフリカも同じく勝ち点2。両チームとも最終節で結果が必要です。',
-    'スイス_ボスニア': '第1節でカタールと引き分けたスイスがこの試合で覚醒！4-1の大勝でグループB首位に立ちました。スイスを選ぶ阿部さん・潮さん・鐙さん・毛利さん・齊藤幸孝Bさん・落合崇Aさん・落合崇Bさん・長岡さん・菊地さん・高田怜和さん・安藤淳二Bさん・高田健史Aさん・高田健史Bさん・松井さんの14名が今日のビッグウィナー。加藤さん・鈴木さんが選ぶボスニアは早くも苦境に。',
-    'カナダ_カタール': 'カナダのホームゲーム。グループBは第1節で全4チームがドローという異例の混戦でしたが、スイスが4-1で抜け出したため、カナダ・ボスニア・カタールの3チームが2位を争う展開に。自国開催のカナダはエース・アルフォンソ・デイヴィスを擁して地元の声援を背に勝ち点3を狙います。カナダを選ぶ潮さん・落合崇Bさん・菊地さん・高田怜和さん・安藤淳二Aさん・安藤淳二Bさん・高田健史Bさん・松井さん・大縄さんの9名に注目。カタール選択は加藤さんのみ。',
-    'メキシコ_韓国': 'NHK地上波中継の注目カード！メキシコは初戦で南アフリカに2-0完勝、韓国もチェコを2-1で逆転撃破と、両チームとも好調な滑り出し。この試合に勝てばグループ突破がほぼ確実に。メキシコを選ぶ参加者は20名中18名と圧倒的。メキシコ勝利なら18名横並びでポイント差がつきにくい展開ですが、韓国が勝てば阿部さんだけ+3ptでドラマが生まれます。長岡さんは◎メキシコ優勝予想なので特に熱い一戦！',
-    // 6/20 試合
-    'アメリカ_オーストラリア': '【NHK中継】アメリカは第1節でパラグアイを4-1と圧倒。バログンの2ゴールなど攻撃陣が爆発しています。一方オーストラリアはトルコを2-0で下して好発進（スプレッドシート反映値）。どちらも第2節で連勝を狙う好カードです。アメリカを選ぶ参加者は全20名中19名と最多。オーストラリア選択は齊藤幸孝Bさんのみなので、アメリカ勝利なら19名まとめて+3pt！',
-    'スコットランド_モロッコ': '【フジテレビ中継】スコットランドはハイチを1-0で下して白星発進。モロッコはブラジルと1-1のドロー。ブラジル相手に引き分けたモロッコの実力は本物です。スコットランドを選ぶ阿部さん・高田怜和さんの2名、モロッコを選ぶ鐙さん・毛利さん・齊藤幸孝Bさん・落合崇Aさん・落合崇Bさん・長岡さん・菊地さん・高田健史Aさん・高田健史Bさん・松井さん・大縄さんの11名の対決。モロッコが多数を占めますが勝負は互角！',
-    'ブラジル_ハイチ': '【NHK中継】ブラジルは初戦でモロッコと1-1のドロー。優勝候補としては物足りない結果でした。ブラジルのネイマールが練習に復帰したとのニュースもあり、この試合での出場も期待されます。一方ハイチは初戦でスコットランドに0-1と敗北。格上ブラジル相手の戦いとなります。ブラジルを選ぶ参加者は全20名と満票！ブラジルが勝てば全員+3ptで差がつかないですが、ハイチ選択の加藤さんが◎ブラジルなので複雑な心境かもしれません（ブラジル勝利が長期的には吉）。',
-    'トルコ_パラグアイ': 'オーストラリアに0-2で敗れたトルコと、アメリカに1-4と大敗したパラグアイの対決。両チームとも初戦黒星で背水の陣。トルコを選ぶ阿部さん・齊藤幸孝Aさん・落合崇Aさん・落合崇Bさん・高田怜和さん・大縄さんの6名、パラグアイ選択は加藤さん・鈴木さんの2名。この試合でどちらが巻き返すか、グループD突破争いに直結します。',
+function buildMatchCard(m, opts){
+  opts = opts || {};
+  const done = m.hs !== null;
+  const time = m.dt.includes('|') ? m.dt.split('|')[1] : m.dt;
+  const dtDate = m.dt.split('|')[0];
+  const ai = getAIComments()[m.home+'_'+m.away] || '';
+  const tvHtml = {'NHK':'<span style="background:#003087;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px">NHK</span>','NTV':'<span style="background:#cc0000;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px">日テレ</span>','CX':'<span style="background:#3a75c4;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px">フジ</span>'}[m.tv]||'';
+
+  // 両取りチェック用
+  const bothNote = (name, picks) => {
+    const hasHome = new Set(picks).has(m.home);
+    const hasAway = new Set(picks).has(m.away);
+    return hasHome && hasAway;
   };
 
-  const renderSection = (title, matches, isToday) => {
-    if(matches.length === 0) return '';
-    let html = `<div style="margin-bottom:8px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:${isToday?'var(--accent)':'var(--muted)'};margin-bottom:10px;padding-left:8px;border-left:4px solid ${isToday?'var(--accent)':'var(--border)'}">
-        ${isToday ? '📅 今日の試合 ('+todayStr+')' : '🌅 明日の試合 ('+tomorrowStr+')'}
-      </div>`;
-    for(const m of matches){
-      const done = m.hs !== null;
-      const time = m.dt.includes('|') ? m.dt.split('|')[1] : m.dt;
-      const key  = m.home + '_' + m.away;
-      const aiComment = AI_COMMENTS[key] || '';
-      const homePickers = PARTICIPANTS.filter(p=>new Set(p.picks).has(m.home)&&p.champ!==m.home);
-      const homeChamp   = PARTICIPANTS.filter(p=>p.champ===m.home);
-      const awayPickers = PARTICIPANTS.filter(p=>new Set(p.picks).has(m.away)&&p.champ!==m.away);
-      const awayChamp   = PARTICIPANTS.filter(p=>p.champ===m.away);
-      const tvHtml = {'NHK':'<span style="background:#003087;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px">NHK</span>','NTV':'<span style="background:#cc0000;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px">日テレ</span>','CX':'<span style="background:#3a75c4;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px">フジ</span>'}[m.tv]||'';
-      const pickerTags = (pickers, champs) =>
-        [...champs.map(p=>`<span class="today-picker-tag champ">🏆${p.name}</span>`),
-         ...pickers.map(p=>`<span class="today-picker-tag">${p.name}</span>`)].join('');
-      html += `<div class="today-match">
-        <div class="today-match-header">
-          <span class="today-time">${time} JST</span>
-          <div class="today-vs">
-            <span class="today-team"><span style="font-size:20px">${F(m.home)}</span>${m.home}</span>
-            <span class="today-score ${done?'done':''}"> ${done?m.hs:'－'} : ${done?m.as:'－'} </span>
-            <span class="today-team">${m.away}<span style="font-size:20px">${F(m.away)}</span></span>
-          </div>
-          <div style="display:flex;gap:6px;align-items:center">${tvHtml}<span class="today-badge-${done?'done':'up'}">${done?'終了':'予定'}</span></div>
-        </div>
-        <div class="today-body">
-          <div class="today-pickers">
-            <div class="today-pickers-title"><span style="font-size:14px">${F(m.home)}</span>${m.home}を選んでいる人</div>
-            <div class="today-pickers-names">${pickerTags(homePickers,homeChamp)||'<span style="color:var(--muted);font-size:11px">なし</span>'}</div>
-          </div>
-          <div class="today-pickers">
-            <div class="today-pickers-title"><span style="font-size:14px">${F(m.away)}</span>${m.away}を選んでいる人</div>
-            <div class="today-pickers-names">${pickerTags(awayPickers,awayChamp)||'<span style="color:var(--muted);font-size:11px">なし</span>'}</div>
-          </div>
-          ${aiComment?`<div class="today-ai-comment"><div class="today-ai-label">🤖 AIコメント</div><div class="today-ai-text">${aiComment}</div></div>`:''}
-        </div>
-      </div>`;
-    }
-    html += '</div>';
-    return html;
+  const homePickers = PARTICIPANTS.filter(p=>new Set(p.picks).has(m.home)&&p.champ!==m.home);
+  const homeChamp   = PARTICIPANTS.filter(p=>p.champ===m.home);
+  const awayPickers = PARTICIPANTS.filter(p=>new Set(p.picks).has(m.away)&&p.champ!==m.away);
+  const awayChamp   = PARTICIPANTS.filter(p=>p.champ===m.away);
+
+  const tag = (p, both) => {
+    const b = new Set(p.picks).has(m.home) && new Set(p.picks).has(m.away);
+    return `<span class="today-picker-tag${p.champ===m.home||p.champ===m.away?' champ':''}">${(p.champ===m.home||p.champ===m.away)?'🏆':''}${p.name}${b?' <span style="color:#9333ea;font-size:9px">両取り</span>':''}</span>`;
   };
+  const pickerTags = (pickers, champs) =>
+    [...champs.map(p=>tag(p)), ...pickers.map(p=>tag(p))].join('') || '<span style="color:var(--muted);font-size:11px">なし</span>';
 
-  // 過去の試合（サブタブで表示）
-  const pastMatches = [];
-  for(const[grpKey,g] of Object.entries(GROUPS)){
-    for(const m of g.matches){
-      if(m.hs !== null){
-        const dtDate = m.dt.split('|')[0];
-        const slash  = dtDate.indexOf('/');
-        const paren  = dtDate.indexOf('(');
-        const mm = dtDate.substring(0, slash);
-        const dd = paren > 0 ? dtDate.substring(slash+1, paren) : dtDate.substring(slash+1);
-        const ds = mm + '/' + dd;
-        if(ds !== todayStr) pastMatches.push({...m, group:grpKey, dateStr:ds});
-      }
-    }
-  }
-  pastMatches.sort((a,b)=>b.dt.localeCompare(a.dt));
+  const headerBg = opts.past ? 'background:#f8f9fa' : '';
+  const scoreSize = opts.past ? 'font-size:22px' : '';
+  const flagSize = opts.past ? '16px' : '20px';
 
-  // 過去試合をAIコメント付きで構築
-  let pastHtml = '';
-  for(const m of pastMatches){
-    const key = m.home + '_' + m.away;
-    const aiComment = AI_COMMENTS[key] || '';
-    const time = m.dt.includes('|') ? m.dt.split('|')[1] : m.dt;
-    const dtDate = m.dt.split('|')[0];
-    const tvHtml = {'NHK':'<span style="background:#003087;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px">NHK</span>','NTV':'<span style="background:#cc0000;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px">日テレ</span>','CX':'<span style="background:#3a75c4;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px">フジ</span>'}[m.tv]||'';
-    pastHtml += `<div class="today-match">
-      <div class="today-match-header" style="background:#f8f9fa">
-        <div style="font-size:10px;color:var(--muted);flex-shrink:0">${dtDate}<br>${time}</div>
-        <div class="today-vs">
-          <span class="today-team"><span style="font-size:16px">${F(m.home)}</span>${m.home}</span>
-          <span class="today-score done" style="font-size:22px"> ${m.hs} : ${m.as} </span>
-          <span class="today-team">${m.away}<span style="font-size:16px">${F(m.away)}</span></span>
-        </div>
-        <div style="display:flex;gap:4px;align-items:center">${tvHtml}<span class="today-badge-done">終了</span></div>
+  let card = `<div class="today-match">
+    <div class="today-match-header" style="${headerBg}">
+      ${opts.past ? `<div style="font-size:10px;color:var(--muted);flex-shrink:0;line-height:1.4">${dtDate}<br>${time}</div>` : `<span class="today-time">${time} JST</span>`}
+      <div class="today-vs">
+        <span class="today-team"><span style="font-size:${flagSize}">${F(m.home)}</span>${m.home}</span>
+        <span class="today-score ${done?'done':''}" style="${scoreSize}"> ${done?m.hs:'－'} : ${done?m.as:'－'} </span>
+        <span class="today-team">${m.away}<span style="font-size:${flagSize}">${F(m.away)}</span></span>
       </div>
-      ${aiComment?`<div style="padding:10px 14px;background:#fff"><div class="today-ai-label">🤖 AIコメント</div><div class="today-ai-text">${aiComment}</div></div>`:''}
+      <div style="display:flex;gap:4px;align-items:center">${tvHtml}<span class="today-badge-${done?'done':'up'}">${done?'終了':'予定'}</span></div>
+    </div>`;
+
+  if(opts.past){
+    // 過去の試合はAIコメントのみ
+    if(ai) card += `<div style="padding:10px 14px;background:#fff"><div class="today-ai-label">🤖 AIコメント</div><div class="today-ai-text">${ai}</div></div>`;
+  } else {
+    // 今日明日は予想メンバー＋AIコメント
+    card += `<div class="today-body">
+      <div class="today-pickers">
+        <div class="today-pickers-title"><span style="font-size:14px">${F(m.home)}</span>${m.home}を選んでいる人</div>
+        <div class="today-pickers-names">${pickerTags(homePickers,homeChamp)}</div>
+      </div>
+      <div class="today-pickers">
+        <div class="today-pickers-title"><span style="font-size:14px">${F(m.away)}</span>${m.away}を選んでいる人</div>
+        <div class="today-pickers-names">${pickerTags(awayPickers,awayChamp)}</div>
+      </div>
+      ${ai?`<div class="today-ai-comment"><div class="today-ai-label">🤖 AIコメント</div><div class="today-ai-text">${ai}</div></div>`:''}
     </div>`;
   }
+  card += '</div>';
+  return card;
+}
 
-  // サブタブUI組み立て
-  const todayHtml    = renderSection('今日', getMatches(todayStr), true);
-  const tomorrowHtml = renderSection('明日', getMatches(tomorrowStr), false);
+function getMatchesByDate(dateStr){
+  const arr = [];
+  for(const[grpKey,g] of Object.entries(GROUPS)){
+    for(const m of g.matches){
+      if(matchDateStr(m.dt) === dateStr) arr.push({...m, group:grpKey});
+    }
+  }
+  arr.sort((a,b)=>(a.dt.split('|')[1]||'').localeCompare(b.dt.split('|')[1]||''));
+  return arr;
+}
 
-  document.getElementById('todaySection').innerHTML = `
-    <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--border)">
-      <button id="daytab-upcoming" onclick="switchDayTab('upcoming')"
-        style="padding:8px 18px;font-size:12px;font-weight:700;color:var(--accent);background:none;border:none;border-bottom:3px solid var(--accent);cursor:pointer;font-family:'Noto Sans JP',sans-serif">今日・明日</button>
-      <button id="daytab-past" onclick="switchDayTab('past')"
-        style="padding:8px 18px;font-size:12px;font-weight:700;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:'Noto Sans JP',sans-serif">過去の試合</button>
-    </div>
-    <div id="daypanel-upcoming">${todayHtml}${tomorrowHtml}</div>
-    <div id="daypanel-past" style="display:none">${pastHtml||'<div style="text-align:center;padding:30px;color:var(--muted)">過去の試合はありません</div>'}</div>`;
+function renderUpcoming(){
+  const todayStr = jstDateStr(0);
+  const tomorrowStr = jstDateStr(1);
+  const today = getMatchesByDate(todayStr);
+  const tomorrow = getMatchesByDate(tomorrowStr);
 
-  window.switchDayTab = (name) => {
-    ['upcoming','past'].forEach(n => {
-      document.getElementById('daypanel-'+n).style.display = n===name?'block':'none';
-      const btn = document.getElementById('daytab-'+n);
-      btn.style.color = n===name?'var(--accent)':'var(--muted)';
-      btn.style.borderBottom = n===name?'3px solid var(--accent)':'3px solid transparent';
-    });
+  let html = '';
+  const section = (label, matches, isToday) => {
+    if(matches.length === 0) return '';
+    let s = `<div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:${isToday?'var(--accent)':'var(--muted)'};margin:6px 0 10px;padding-left:8px;border-left:4px solid ${isToday?'var(--accent)':'var(--border)'}">${label}</div>`;
+    for(const m of matches) s += buildMatchCard(m, {past:false});
+    return s;
   };
+  html += section('📅 今日の試合 ('+todayStr+')', today, true);
+  html += section('🌅 明日の試合 ('+tomorrowStr+')', tomorrow, false);
+  if(!html) html = '<div style="text-align:center;padding:40px;color:var(--muted)">今日・明日の試合はありません</div>';
+  document.getElementById('upcomingSection').innerHTML = html;
+}
+
+function renderPast(){
+  const todayStr = jstDateStr(0);
+  const past = [];
+  for(const[grpKey,g] of Object.entries(GROUPS)){
+    for(const m of g.matches){
+      if(m.hs !== null && matchDateStr(m.dt) !== todayStr){
+        past.push({...m, group:grpKey});
+      }
+    }
+  }
+  past.sort((a,b)=>b.dt.localeCompare(a.dt));
+  let html = '';
+  for(const m of past) html += buildMatchCard(m, {past:true});
+  if(!html) html = '<div style="text-align:center;padding:40px;color:var(--muted)">過去の試合はありません</div>';
+  document.getElementById('pastSection').innerHTML = html;
 }
 
 // 初期表示
