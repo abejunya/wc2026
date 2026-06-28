@@ -492,8 +492,9 @@ function renderAllPicks(){
   const tb='<tbody>'+sc.map(p=>{const s=new Set(p.picks);return`<tr>
     <td class="name-cell" style="position:sticky;left:0;background:#fff;z-index:1">${p.name}</td>
     ${all.map(({team,group},i)=>{const bl=i>0&&all[i-1].group!==all[i].group?'border-left:2px solid #d1d5db;':'';
-      if(team===p.champ)return`<td style="${bl}"><span style="font-size:14px">🏆</span></td>`;
-      if(s.has(team))return`<td style="${bl}"><span class="mark-pick">●</span></td>`;
+      const out=(typeof ADVANCED!=='undefined')&&ADVANCED.length>0&&!ADVANCED.includes(team);
+      if(team===p.champ)return`<td style="${bl}"><span style="font-size:14px;${out?'opacity:0.25;filter:grayscale(1)':''}">🏆</span></td>`;
+      if(s.has(team))return`<td style="${bl}"><span class="mark-pick" style="${out?'color:#d1d5db':''}">●</span></td>`;
       return`<td style="${bl}"></td>`;}).join('')}
     <td class="pts-cell-sm">${p.total}</td></tr>`;}).join('')+'</tbody>';
   document.getElementById('allPicksTable').innerHTML=th+tb;
