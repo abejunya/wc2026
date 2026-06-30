@@ -324,22 +324,22 @@ L:{teams:["イングランド","クロアチア","ガーナ","パナマ"],matche
 const ADVANCED=["メキシコ", "南アフリカ", "スイス", "カナダ", "ブラジル", "モロッコ", "アメリカ", "オーストラリア", "ドイツ", "コートジボワール", "オランダ", "日本", "ベルギー", "エジプト", "スペイン", "カボベルデ", "フランス", "ノルウェー", "アルゼンチン", "オーストリア", "コロンビア", "ポルトガル", "イングランド", "クロアチア", "スウェーデン", "コンゴ", "エクアドル", "ガーナ", "ボスニア", "アルジェリア", "パラグアイ", "セネガル"];
 const KNOCKOUT=[
 {round:"ラウンド32",matches:[
-{dt:"6/29(月)|04:00",home:"南アフリカ",away:"カナダ",hs:null,as:null},
-{dt:"6/29(月)|07:30",home:"1位C",away:"2位F",hs:null,as:null},
-{dt:"6/30(火)|02:00",home:"ブラジル",away:"日本",hs:null,as:null},
-{dt:"6/30(火)|05:30",home:"1位B",away:"2位A",hs:null,as:null},
+{dt:"6/29(月)|04:00",home:"南アフリカ",away:"カナダ",hs:0,as:1},
+{dt:"6/30(火)|02:00",home:"ブラジル",away:"日本",hs:2,as:1},
+{dt:"6/30(火)|05:30",home:"ドイツ",away:"パラグアイ",hs:1,as:1,pk:"3-4"},
 {dt:"6/30(火)|10:00",home:"オランダ",away:"モロッコ",hs:null,as:null},
 {dt:"7/1(水)|02:00",home:"コートジボワール",away:"ノルウェー",hs:null,as:null},
-{dt:"7/1(水)|05:30",home:"1位G",away:"2位H",hs:null,as:null},
-{dt:"7/1(水)|11:00",home:"1位I",away:"2位J",hs:null,as:null},
-{dt:"7/2(木)|02:00",home:"1位K",away:"3位*",hs:null,as:null},
-{dt:"7/2(木)|05:30",home:"1位H",away:"2位G",hs:null,as:null},
-{dt:"7/2(木)|11:00",home:"1位J",away:"2位I",hs:null,as:null},
-{dt:"7/3(金)|02:00",home:"1位L",away:"3位*",hs:null,as:null},
-{dt:"7/3(金)|05:30",home:"勝者R32①",away:"勝者R32②",hs:null,as:null},
-{dt:"7/3(金)|11:00",home:"勝者R32③",away:"勝者R32④",hs:null,as:null},
-{dt:"7/4(土)|02:00",home:"勝者R32⑤",away:"勝者R32⑥",hs:null,as:null},
-{dt:"7/4(土)|05:30",home:"勝者R32⑦",away:"勝者R32⑧",hs:null,as:null},
+{dt:"7/1(水)|06:00",home:"フランス",away:"スウェーデン",hs:null,as:null},
+{dt:"7/1(水)|10:00",home:"メキシコ",away:"エクアドル",hs:null,as:null},
+{dt:"7/2(木)|01:00",home:"イングランド",away:"コンゴ",hs:null,as:null},
+{dt:"7/2(木)|05:00",home:"ベルギー",away:"セネガル",hs:null,as:null},
+{dt:"7/2(木)|09:00",home:"アメリカ",away:"ボスニア",hs:null,as:null},
+{dt:"7/3(金)|04:00",home:"スペイン",away:"オーストリア",hs:null,as:null},
+{dt:"7/3(金)|08:00",home:"ポルトガル",away:"クロアチア",hs:null,as:null},
+{dt:"7/3(金)|12:00",home:"スイス",away:"アルジェリア",hs:null,as:null},
+{dt:"7/4(土)|03:00",home:"オーストラリア",away:"エジプト",hs:null,as:null},
+{dt:"7/4(土)|07:00",home:"アルゼンチン",away:"カボベルデ",hs:null,as:null},
+{dt:"7/4(土)|10:30",home:"コロンビア",away:"ガーナ",hs:null,as:null},
 ]},
 {round:"ラウンド16",matches:[
 {dt:"7/5(日)|04:00",home:"R32勝者",away:"R32勝者",hs:null,as:null},
@@ -398,8 +398,17 @@ function calcScore(p){
   }
   let ko=0;
   for(const t of ADVANCED){if(s.has(t))ko+=3;}
+  let kw=0;
+  for(const ph of KNOCKOUT){for(const m of ph.matches){
+    if(m.hs===null)continue;
+    let winner=null;
+    if(m.hs>m.as)winner=m.home;
+    else if(m.as>m.hs)winner=m.away;
+    else if(m.pk){const[a,b]=m.pk.split('-').map(Number);winner=a>b?m.home:m.away;}
+    if(winner&&s.has(winner))kw+=3;
+  }}
   const b=(champion&&champion===p.champ)?5:0;
-  return{gl,ko,bonus:b,total:gl+ko+b};
+  return{gl,ko,kw,bonus:b,total:gl+ko+kw+b};
 }
 
 function calcTeamPts(grpKey, team){
@@ -470,7 +479,7 @@ function renderResults(){
       <div class="match-datetime">${(()=>{const[d,t]=m.dt.includes("|")?m.dt.split("|"):[m.dt,""];const icons={"NHK":'<span style="background:#003087;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;white-space:nowrap">NHK</span>',"NTV":'<span style="background:#cc0000;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;white-space:nowrap">日テレ</span>',"CX":'<span style="background:#3a75c4;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;white-space:nowrap">フジ</span>'};return `<div style="line-height:1.5;flex-shrink:0">${d}${t?`<br>${t}`:""}</div>`+((m.tv&&icons[m.tv])?`<div style="padding-top:1px;flex-shrink:0">${icons[m.tv]}</div>`:"");})()}</div>
       <div class="match-teams">
         <div class="team-a"><span class="tn">${m.home}</span>${hf?`<span class="flag">${hf}</span>`:''}</div>
-        <div class="score-box"><span class="score-num">${done?m.hs:'–'}</span><span class="score-sep">:</span><span class="score-num">${done?m.as:'–'}</span></div>
+        <div class="score-box"><span class="score-num">${done?m.hs:'–'}</span><span class="score-sep">:</span><span class="score-num">${done?m.as:'–'}</span>${m.pk?`<span style="font-size:9px;color:var(--muted);display:block;white-space:nowrap">PK ${m.pk}</span>`:''}</div>
         <div class="team-b">${af?`<span class="flag">${af}</span>`:''}<span class="tn">${m.away}</span></div>
       </div>
       <span class="status-badge ${done?'badge-done':'badge-tbd'}">${done?'終了':'予定'}</span>
